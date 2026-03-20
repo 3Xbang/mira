@@ -2,17 +2,24 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, ScanCommand, GetCommand } from '@aws-sdk/lib-dynamodb'
 import type { Property } from './properties'
 
+// On Amplify: uses the service role's IAM permissions automatically
+// Locally: reads from MIRA_ACCESS_KEY_ID / MIRA_SECRET_ACCESS_KEY in .env.local
+const credentials =
+  process.env.MIRA_ACCESS_KEY_ID && process.env.MIRA_SECRET_ACCESS_KEY
+    ? {
+        accessKeyId: process.env.MIRA_ACCESS_KEY_ID,
+        secretAccessKey: process.env.MIRA_SECRET_ACCESS_KEY,
+      }
+    : undefined
+
 const client = new DynamoDBClient({
-  region: process.env.AWS_REGION ?? 'us-east-1',
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
+  region: process.env.MIRA_REGION ?? 'us-east-1',
+  ...(credentials ? { credentials } : {}),
 })
 
 const docClient = DynamoDBDocumentClient.from(client)
 
-const TABLE = process.env.DYNAMODB_TABLE ?? 'mira-properties'
+const TABLE = process.env.MIRA_DYNAMODB_TABLE ?? 'mira-properties'
 
 // Fetch all properties from DynamoDB
 export async function getAllPropertiesFromDB(): Promise<Property[]> {
