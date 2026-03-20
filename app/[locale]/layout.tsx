@@ -2,12 +2,17 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
+import { locales } from '@/i18n'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import TrackingScripts from '@/components/tracking/TrackingScripts'
 import '../globals.css'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }))
+}
 
 export const metadata: Metadata = {
   title: 'Mira Real Estate — Koh Samui',
