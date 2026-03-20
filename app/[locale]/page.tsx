@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import HeroSection from '@/components/home/HeroSection'
 import FeaturedProperties from '@/components/home/FeaturedProperties'
 import ContactButton from '@/components/common/ContactButton'
-import { getFeaturedPropertiesFromDB } from '@/lib/dynamodb'
+import { getFeaturedProperties } from '@/lib/properties'
 
 interface HomePageProps {
   params: Promise<{ locale: string }>
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: HomePageProps): Promise<Metad
 // Homepage: hero + featured properties grid + floating contact button
 export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params
-  const featuredProperties = await getFeaturedPropertiesFromDB()
+  const featuredProperties = getFeaturedProperties()
 
   return (
     <main>

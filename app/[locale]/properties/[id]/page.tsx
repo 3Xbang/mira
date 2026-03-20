@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
-import { getAllPropertiesFromDB, getPropertyByIdFromDB } from '@/lib/dynamodb'
+import { getAllProperties, getPropertyById } from '@/lib/properties'
 import { locales } from '@/i18n'
 import ImageCarousel from '@/components/property/ImageCarousel'
 import PanoramaViewer from '@/components/property/PanoramaViewer'
@@ -13,7 +13,7 @@ interface PropertyPageProps {
 
 export async function generateMetadata({ params }: PropertyPageProps): Promise<Metadata> {
   const { locale, id } = await params
-  const property = await getPropertyByIdFromDB(id)
+  const property = getPropertyById(id)
 
   const defaultTitle = 'Mira Real Estate — Luxury Villas in Koh Samui'
   const defaultDescription =
@@ -62,7 +62,7 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
 
 // Generate static routes for all locale × property id combinations
 export async function generateStaticParams() {
-  const properties = await getAllPropertiesFromDB()
+  const properties = getAllProperties()
   return locales.flatMap((locale) =>
     properties.map((p) => ({ locale, id: p.id }))
   )
@@ -158,7 +158,7 @@ function LandIcon() {
 
 export default async function PropertyPage({ params }: PropertyPageProps) {
   const { id, locale } = await params
-  const property = await getPropertyByIdFromDB(id)
+  const property = getPropertyById(id)
 
   // Render 404 if property doesn't exist
   if (!property) {
