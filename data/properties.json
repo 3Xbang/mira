@@ -1,0 +1,120 @@
+[
+  {
+    "id": "beachfront-villa-chaweng",
+    "title": "Beachfront Villa Chaweng",
+    "price": 38500000,
+    "currency": "THB",
+    "area_sqm": 420,
+    "land_sqm": 950,
+    "bedrooms": 5,
+    "bathrooms": 4,
+    "location": "Chaweng, Koh Samui",
+    "description": "Stunning beachfront villa with direct access to Chaweng Beach. This exceptional property features an infinity pool overlooking the Gulf of Thailand, open-plan living spaces with floor-to-ceiling glass, a fully equipped chef's kitchen, and a private tropical garden. Each bedroom has an en-suite bathroom and sea-view balcony. Perfect for a luxury holiday home or high-yield rental investment.",
+    "images": [
+      "https://cdn.mira-samui.com/properties/beachfront-villa-chaweng/main.webp",
+      "https://cdn.mira-samui.com/properties/beachfront-villa-chaweng/pool.webp",
+      "https://cdn.mira-samui.com/properties/beachfront-villa-chaweng/living.webp",
+      "https://cdn.mira-samui.com/properties/beachfront-villa-chaweng/bedroom.webp",
+      "https://cdn.mira-samui.com/properties/beachfront-villa-chaweng/kitchen.webp"
+    ],
+    "panorama_url": "https://cdn.mira-samui.com/panoramas/beachfront-villa-chaweng/living-room.jpg",
+    "panorama_hotspots": [
+      {
+        "pitch": 0,
+        "yaw": 90,
+        "targetPanoramaUrl": "https://cdn.mira-samui.com/panoramas/beachfront-villa-chaweng/master-bedroom.jpg",
+        "label": "Master Bedroom"
+      },
+      {
+        "pitch": -5,
+        "yaw": -120,
+        "targetPanoramaUrl": "https://cdn.mira-samui.com/panoramas/beachfront-villa-chaweng/pool-terrace.jpg",
+        "label": "Pool Terrace"
+      },
+      {
+        "pitch": 2,
+        "yaw": 45,
+        "targetPanoramaUrl": "https://cdn.mira-samui.com/panoramas/beachfront-villa-chaweng/kitchen.jpg",
+        "label": "Kitchen"
+      }
+    ],
+    "featured": true
+  },
+  {
+    "id": "hillside-villa-bophut",
+    "title": "Hillside Pool Villa Bophut",
+    "price": 24900000,
+    "currency": "THB",
+    "area_sqm": 280,
+    "land_sqm": 620,
+    "bedrooms": 3,
+    "bathrooms": 3,
+    "location": "Bophut, Koh Samui",
+    "description": "Elegant hillside villa nestled above the charming Fisherman's Village in Bophut. Enjoy sweeping panoramic views of the Gulf of Thailand from the private infinity pool and wraparound terrace. The villa blends contemporary Thai architecture with natural materials — teak wood, local stone, and lush tropical landscaping. Walking distance to boutique restaurants, galleries, and the famous Friday Night Market.",
+    "images": [
+      "https://cdn.mira-samui.com/properties/hillside-villa-bophut/main.webp",
+      "https://cdn.mira-samui.com/properties/hillside-villa-bophut/view.webp",
+      "https://cdn.mira-samui.com/properties/hillside-villa-bophut/pool.webp",
+      "https://cdn.mira-samui.com/properties/hillside-villa-bophut/interior.webp"
+    ],
+    "featured": true
+  },
+  {
+    "id": "garden-townhouse-maenam",
+    "title": "Tropical Garden Townhouse Maenam",
+    "price": 9800000,
+    "currency": "THB",
+    "area_sqm": 145,
+    "land_sqm": 180,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "location": "Maenam, Koh Samui",
+    "description": "Modern two-storey townhouse in a peaceful gated community near Maenam Beach. The property features a private garden, covered parking, and a shared community pool. The open-plan ground floor connects the living area to a contemporary kitchen and a shaded outdoor terrace. Upstairs, two spacious bedrooms each have en-suite bathrooms and built-in wardrobes. Ideal for a permanent residence or long-term rental.",
+    "images": [
+      "https://cdn.mira-samui.com/properties/garden-townhouse-maenam/main.webp",
+      "https://cdn.mira-samui.com/properties/garden-townhouse-maenam/garden.webp",
+      "https://cdn.mira-samui.com/properties/garden-townhouse-maenam/living.webp",
+      "https://cdn.mira-samui.com/properties/garden-townhouse-maenam/bedroom.webp"
+    ],
+    "featured": true
+  },
+  {
+    "id": "seaview-villa-lamai",
+    "title": "Sea View Villa Lamai",
+    "price": 18750000,
+    "currency": "THB",
+    "area_sqm": 310,
+    "land_sqm": 740,
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "location": "Lamai, Koh Samui",
+    "description": "Beautifully designed four-bedroom villa perched on the hillside above Lamai Beach with breathtaking sea views. The property features a 12-metre private pool, a spacious sala for outdoor dining, and a fully landscaped tropical garden. The interior combines polished concrete floors with warm timber accents and bespoke Thai craftsmanship. Located minutes from Lamai's vibrant beach strip, restaurants, and nightlife.",
+    "images": [
+      "https://cdn.mira-samui.com/properties/seaview-villa-lamai/main.webp",
+      "https://cdn.mira-samui.com/properties/seaview-villa-lamai/pool.webp",
+      "https://cdn.mira-samui.com/properties/seaview-villa-lamai/sala.webp",
+      "https://cdn.mira-samui.com/properties/seaview-villa-lamai/bedroom.webp",
+      "https://cdn.mira-samui.com/properties/seaview-villa-lamai/bathroom.webp"
+    ],
+    "featured": true
+  },
+  {
+    "id": "beachside-townhouse-choeng-mon",
+    "title": "Beachside Townhouse Choeng Mon",
+    "price": 12400000,
+    "currency": "THB",
+    "area_sqm": 175,
+    "land_sqm": 210,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "location": "Choeng Mon, Koh Samui",
+    "description": "Contemporary three-bedroom townhouse just 200 metres from the calm waters of Choeng Mon Beach — one of Koh Samui's most sought-after and family-friendly locations. The property sits within a boutique development of only eight units, each with a private rooftop terrace offering sea glimpses. Ground floor features an open living and dining area, a modern kitchen, and a covered car port. Choeng Mon village offers excellent dining, watersports, and easy access to the airport.",
+    "images": [
+      "https://cdn.mira-samui.com/properties/beachside-townhouse-choeng-mon/main.webp",
+      "https://cdn.mira-samui.com/properties/beachside-townhouse-choeng-mon/rooftop.webp",
+      "https://cdn.mira-samui.com/properties/beachside-townhouse-choeng-mon/living.webp",
+      "https://cdn.mira-samui.com/properties/beachside-townhouse-choeng-mon/bedroom.webp"
+    ],
+    "featured": false
+  }
+]

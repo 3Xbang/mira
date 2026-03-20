@@ -1,0 +1,39 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "properties": "Propriétés",
+    "contact": "Contact"
+  },
+  "hero": {
+    "tagline": "Votre villa de rêve à Koh Samui",
+    "subtitle": "Des propriétés de luxe au paradis — trouvez votre havre idéal",
+    "cta": "Découvrir les propriétés"
+  },
+  "property": {
+    "price": "Prix",
+    "bedrooms": "Chambres",
+    "bathrooms": "Salles de bain",
+    "builtArea": "Surface habitable",
+    "landArea": "Surface du terrain",
+    "location": "Emplacement",
+    "viewTour": "Visite virtuelle 360°",
+    "contactUs": "Nous contacter",
+    "featuredTitle": "Propriétés en vedette",
+    "featuredSubtitle": "Villas et résidences de luxe sélectionnées à Koh Samui"
+  },
+  "contact": {
+    "whatsapp": "WhatsApp",
+    "line": "Line",
+    "title": "Contactez-nous"
+  },
+  "footer": {
+    "copyright": "© 2024 Mira Real Estate. Tous droits réservés.",
+    "tagline": "Votre partenaire de confiance pour l'immobilier de luxe à Koh Samui.",
+    "address": "Koh Samui, Surat Thani, Thailand"
+  },
+  "errors": {
+    "notFound": "Propriété introuvable",
+    "notFoundDesc": "La propriété que vous recherchez n'existe pas ou a été supprimée.",
+    "backHome": "Retour à l'accueil"
+  }
+}
