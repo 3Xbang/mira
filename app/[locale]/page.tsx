@@ -36,8 +36,6 @@ export async function generateMetadata({ params }: HomePageProps): Promise<Metad
 export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params
   const featuredProperties = await getFeaturedProperties()
-
-  const featuredProperties = await getFeaturedProperties()
   const heroImages = await getHeroBanners()
   const settings = await getSiteSettings()
 
