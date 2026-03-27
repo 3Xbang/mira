@@ -20,16 +20,19 @@ function detectMarket(request: NextRequest): "th" | "uk" {
 export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Only redirect the root path
+  // Only redirect the root path, and only if there's no explicit market preference cookie
   if (pathname === "/") {
-    const market = detectMarket(request);
-    const url = request.nextUrl.clone();
-    if (market === "th") {
-      url.pathname = "/en";
-    } else {
-      url.pathname = "/en/uk";
+    const marketCookie = request.cookies.get('mira-market')?.value;
+    if (!marketCookie) {
+      const market = detectMarket(request);
+      const url = request.nextUrl.clone();
+      if (market === "th") {
+        url.pathname = "/en";
+      } else {
+        url.pathname = "/en/uk";
+      }
+      return NextResponse.redirect(url);
     }
-    return NextResponse.redirect(url);
   }
 
   return intlMiddleware(request);
