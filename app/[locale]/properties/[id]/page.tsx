@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
   }
 
   const title = `${property.title} — Mira Real Estate`
-  const description = property.description.slice(0, 160)
+  const description = (property.description ?? defaultDescription).slice(0, 160)
   const image = property.images?.[0] || defaultImage
 
   return {
