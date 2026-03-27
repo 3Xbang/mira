@@ -41,6 +41,20 @@ export default async function HomePage({ params }: HomePageProps) {
     <main>
       <HeroSection />
       <FeaturedProperties locale={locale} properties={featuredProperties} />
+      {/* UK services banner */}
+      <section className="py-16 px-4 bg-dark-gray text-white text-center">
+        <p className="text-gray-400 mb-2 text-sm">Also available on Mira</p>
+        <h2 className="text-2xl font-bold mb-4">UK Property Services</h2>
+        <p className="text-gray-400 max-w-xl mx-auto mb-8 text-sm">
+          Reference letters, property management, and landlord-tenant matching — powered by RS Ref Ltd and Mira Manage Ltd.
+        </p>
+        <a
+          href={`/${locale}/uk`}
+          className="inline-block bg-ocean-blue hover:bg-blue-600 text-white font-semibold px-8 py-3 rounded-full transition-colors"
+        >
+          Explore UK Services 🇬🇧
+        </a>
+      </section>
       <ContactButton whatsappNumber="66812345678" lineId="mira_samui" />
     </main>
   )
