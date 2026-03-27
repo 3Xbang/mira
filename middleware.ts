@@ -25,10 +25,9 @@ export default function middleware(request: NextRequest) {
     const market = detectMarket(request);
     const url = request.nextUrl.clone();
     if (market === "th") {
-      url.pathname = "/";
-      return NextResponse.redirect(url);
+      url.pathname = "/en";
     } else {
-      url.pathname = "/uk";
+      url.pathname = "/en/uk";
     }
     return NextResponse.redirect(url);
   }
