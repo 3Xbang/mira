@@ -33,7 +33,10 @@ export default function HeroSection({ heroImages }: { heroImages?: string[] }) {
           key={src}
           className={`absolute inset-0 transition-opacity duration-1000 ${i === current ? 'opacity-100' : 'opacity-0'}`}
         >
-          <Image src={src} alt="Luxury villa in Koh Samui" fill priority={i === 0} className="object-cover object-center" />
+          {/* Blurred background */}
+          <Image src={src} alt="" fill priority={i === 0} className="object-cover object-center scale-110 blur-md opacity-60" aria-hidden="true" />
+          {/* Full image centered */}
+          <Image src={src} alt="Luxury villa in Koh Samui" fill priority={i === 0} className="object-contain object-center" />
         </div>
       ))}
       <div className="absolute inset-0 bg-black/45" />
