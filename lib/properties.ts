@@ -12,6 +12,7 @@ export interface PanoramaHotspot {
 export interface Property {
   id: string
   title: string
+  type: 'new' | 'resale' | 'rental'
   price: number
   currency: string
   area_sqm: number
