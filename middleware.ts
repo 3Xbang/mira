@@ -2,7 +2,7 @@ import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { locales, defaultLocale } from "./i18n";
 
-const intlMiddleware = createMiddleware({ locales, defaultLocale, localePrefix: 'as-needed' });
+const intlMiddleware = createMiddleware({ locales, defaultLocale });
 
 // Detect market from IP country header (set by Cloudflare or similar)
 // Falls back to Accept-Language or defaults to 'uk' market for non-TH visitors

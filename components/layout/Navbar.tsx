@@ -20,9 +20,9 @@ export default function Navbar() {
   function goToMarket(market: 'th' | 'uk') {
     document.cookie = 'mira-market=' + market + '; path=/; max-age=31536000'
     if (market === 'th') {
-      router.push('/')
+      router.push('/en')
     } else {
-      router.push('/uk')
+      router.push('/en/uk')
     }
     setMenuOpen(false)
   }
