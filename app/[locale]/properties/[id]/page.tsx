@@ -13,7 +13,7 @@ interface PropertyPageProps {
 
 export async function generateMetadata({ params }: PropertyPageProps): Promise<Metadata> {
   const { locale, id } = await params
-  const property = getPropertyById(id)
+  const property = await getPropertyById(id)
 
   const defaultTitle = 'Mira Real Estate — Luxury Villas in Koh Samui'
   const defaultDescription =
@@ -62,9 +62,9 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
 
 // Generate static routes for all locale × property id combinations
 export async function generateStaticParams() {
-  const properties = getAllProperties()
+  const properties = await getAllProperties()
   return locales.flatMap((locale) =>
-    properties.map((p) => ({ locale, id: p.id }))
+    properties.map((p) => ({ locale, id: String(p.id) }))
   )
 }
 
@@ -158,7 +158,7 @@ function LandIcon() {
 
 export default async function PropertyPage({ params }: PropertyPageProps) {
   const { id, locale } = await params
-  const property = getPropertyById(id)
+  const property = await getPropertyById(id)
 
   // Render 404 if property doesn't exist
   if (!property) {
@@ -167,10 +167,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
   const t = await getTranslations('property')
 
-  // Format price with locale-aware number formatting
-  const formattedPrice = new Intl.NumberFormat(locale, {
+  // Format price with USD currency
+  const formattedPrice = new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: property.currency,
+    currency: 'USD',
     maximumFractionDigits: 0,
   }).format(property.price)
 

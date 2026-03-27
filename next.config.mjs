@@ -21,6 +21,12 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "miraa.homes",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 };

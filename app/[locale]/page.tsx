@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import HeroSection from '@/components/home/HeroSection'
 import FeaturedProperties from '@/components/home/FeaturedProperties'
 import ContactButton from '@/components/common/ContactButton'
-import { getFeaturedProperties } from '@/lib/properties'
+import { getFeaturedProperties, getHeroBanners, getSiteSettings } from '@/lib/properties'
 
 interface HomePageProps {
   params: Promise<{ locale: string }>
@@ -35,11 +35,15 @@ export async function generateMetadata({ params }: HomePageProps): Promise<Metad
 // Homepage: hero + featured properties grid + floating contact button
 export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params
-  const featuredProperties = getFeaturedProperties()
+  const featuredProperties = await getFeaturedProperties()
+
+  const featuredProperties = await getFeaturedProperties()
+  const heroImages = await getHeroBanners()
+  const settings = await getSiteSettings()
 
   return (
     <main>
-      <HeroSection />
+      <HeroSection heroImages={heroImages} />
       <FeaturedProperties locale={locale} properties={featuredProperties} />
       {/* UK services banner */}
       <section className="py-16 px-4 bg-dark-gray text-white text-center">
@@ -55,7 +59,7 @@ export default async function HomePage({ params }: HomePageProps) {
           Explore UK Services 🇬🇧
         </a>
       </section>
-      <ContactButton whatsappNumber="66812345678" lineId="mira_samui" />
+      <ContactButton whatsappNumber={settings.whatsapp} lineId={settings.lineId} />
     </main>
   )
 }

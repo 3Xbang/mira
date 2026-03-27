@@ -3,8 +3,8 @@
     "id": "beachfront-villa-chaweng",
     "title": "Beachfront Villa Chaweng",
     "type": "new",
-    "price": 38500000,
-    "currency": "THB",
+    "price": 1050000,
+    "currency": "USD",
     "area_sqm": 420,
     "land_sqm": 950,
     "bedrooms": 5,
@@ -18,35 +18,14 @@
       "https://cdn.mira-samui.com/properties/beachfront-villa-chaweng/bedroom.webp",
       "https://cdn.mira-samui.com/properties/beachfront-villa-chaweng/kitchen.webp"
     ],
-    "panorama_url": "https://cdn.mira-samui.com/panoramas/beachfront-villa-chaweng/living-room.jpg",
-    "panorama_hotspots": [
-      {
-        "pitch": 0,
-        "yaw": 90,
-        "targetPanoramaUrl": "https://cdn.mira-samui.com/panoramas/beachfront-villa-chaweng/master-bedroom.jpg",
-        "label": "Master Bedroom"
-      },
-      {
-        "pitch": -5,
-        "yaw": -120,
-        "targetPanoramaUrl": "https://cdn.mira-samui.com/panoramas/beachfront-villa-chaweng/pool-terrace.jpg",
-        "label": "Pool Terrace"
-      },
-      {
-        "pitch": 2,
-        "yaw": 45,
-        "targetPanoramaUrl": "https://cdn.mira-samui.com/panoramas/beachfront-villa-chaweng/kitchen.jpg",
-        "label": "Kitchen"
-      }
-    ],
     "featured": true
   },
   {
     "id": "hillside-villa-bophut",
     "title": "Hillside Pool Villa Bophut",
     "type": "resale",
-    "price": 24900000,
-    "currency": "THB",
+    "price": 680000,
+    "currency": "USD",
     "area_sqm": 280,
     "land_sqm": 620,
     "bedrooms": 3,
@@ -65,8 +44,8 @@
     "id": "garden-townhouse-maenam",
     "title": "Tropical Garden Townhouse Maenam",
     "type": "rental",
-    "price": 9800000,
-    "currency": "THB",
+    "price": 2800,
+    "currency": "USD",
     "area_sqm": 145,
     "land_sqm": 180,
     "bedrooms": 2,
@@ -85,8 +64,8 @@
     "id": "seaview-villa-lamai",
     "title": "Sea View Villa Lamai",
     "type": "resale",
-    "price": 18750000,
-    "currency": "THB",
+    "price": 510000,
+    "currency": "USD",
     "area_sqm": 310,
     "land_sqm": 740,
     "bedrooms": 4,
@@ -106,8 +85,8 @@
     "id": "beachside-townhouse-choeng-mon",
     "title": "Beachside Townhouse Choeng Mon",
     "type": "rental",
-    "price": 12400000,
-    "currency": "THB",
+    "price": 3500,
+    "currency": "USD",
     "area_sqm": 175,
     "land_sqm": 210,
     "bedrooms": 3,
