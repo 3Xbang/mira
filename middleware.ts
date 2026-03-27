@@ -2,7 +2,7 @@ import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { locales, defaultLocale } from "./i18n";
 
-const intlMiddleware = createMiddleware({ locales, defaultLocale });
+const intlMiddleware = createMiddleware({ locales, defaultLocale, localePrefix: 'as-needed' });
 
 // Detect market from IP country header (set by Cloudflare or similar)
 // Falls back to Accept-Language or defaults to 'uk' market for non-TH visitors
@@ -25,9 +25,10 @@ export default function middleware(request: NextRequest) {
     const market = detectMarket(request);
     const url = request.nextUrl.clone();
     if (market === "th") {
-      url.pathname = "/en";
+      url.pathname = "/";
+      return NextResponse.redirect(url);
     } else {
-      url.pathname = "/en/uk";
+      url.pathname = "/uk";
     }
     return NextResponse.redirect(url);
   }
