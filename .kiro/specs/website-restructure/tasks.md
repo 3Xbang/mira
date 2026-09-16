@@ -24,7 +24,7 @@
 
 ### 2. 文件删除和清理任务
 
-- [-] 2.1 删除英国服务页面文件
+- [x] 2.1 删除英国服务页面文件
   - 删除 `e:\mira\app\[locale]\uk\page.tsx` (英国服务主页)
   - 删除 `e:\mira\app\[locale]\uk\rs-ref\page.tsx` (RS Ref评估系统页面)
   - 删除 `e:\mira\app\[locale]\uk\mira-manage\page.tsx` (Mira Manage物业管理页面)
@@ -49,7 +49,7 @@
 
 ### 3. 组件重构任务
 
-- [~] 3.1 重构导航栏组件 (Navbar.tsx)
+- [ ] 3.1 重构导航栏组件 (Navbar.tsx)
   - 修改 `e:\mira\components\layout\Navbar.tsx`
   - 移除市场切换器逻辑和UI元素
   - 简化导航链接结构，只保留房产相关链接

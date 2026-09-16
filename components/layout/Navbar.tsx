@@ -2,41 +2,21 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useParams, usePathname, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import LanguageSwitcher from '@/components/common/LanguageSwitcher'
 
 export default function Navbar() {
   const t = useTranslations('nav')
   const params = useParams()
-  const pathname = usePathname()
-  const router = useRouter()
   const locale = (params?.locale as string) || 'en'
 
   const [menuOpen, setMenuOpen] = useState(false)
 
-  const isUK = pathname.includes('/uk')
-
-  function goToMarket(market: 'th' | 'uk') {
-    document.cookie = 'mira-market=' + market + '; path=/; max-age=31536000'
-    if (market === 'th') {
-      router.push('/en')
-    } else {
-      router.push('/en/uk')
-    }
-    setMenuOpen(false)
-  }
-
-  const navLinks = isUK
-    ? [
-        { label: 'Home', href: `/${locale}/uk` },
-        { label: 'Reference Letters', href: `/${locale}/uk/rs-ref` },
-        { label: 'Property Management', href: `/${locale}/uk/mira-manage` },
-      ]
-    : [
-        { label: t('home'), href: `/${locale}` },
-        { label: t('properties'), href: `/${locale}#featured` },
-      ]
+  const navLinks = [
+    { label: t('home'), href: `/${locale}` },
+    { label: t('properties'), href: `/${locale}#featured` },
+  ]
 
   return (
     <nav className="sticky top-0 z-40 bg-white shadow-sm">
@@ -63,23 +43,8 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Right side: market switcher + language switcher + mobile hamburger */}
+          {/* Right side: language switcher + mobile hamburger */}
           <div className="flex items-center gap-3">
-            {/* Market switcher */}
-            <div className="hidden md:flex items-center bg-light-gray rounded-full p-1 text-xs font-semibold">
-              <button
-                onClick={() => goToMarket('th')}
-                className={`px-3 py-1 rounded-full transition-colors ${!isUK ? 'bg-ocean-blue text-white' : 'text-gray-500 hover:text-dark-gray'}`}
-              >
-                🇹🇭 Thailand
-              </button>
-              <button
-                onClick={() => goToMarket('uk')}
-                className={`px-3 py-1 rounded-full transition-colors ${isUK ? 'bg-ocean-blue text-white' : 'text-gray-500 hover:text-dark-gray'}`}
-              >
-                🇬🇧 UK
-              </button>
-            </div>
             <LanguageSwitcher />
 
             {/* Hamburger button — mobile only */}
@@ -107,21 +72,6 @@ export default function Navbar() {
         {/* Mobile dropdown menu */}
         {menuOpen && (
           <div className="md:hidden border-t border-gray-100 py-2">
-            {/* Mobile market switcher */}
-            <div className="flex gap-2 px-4 py-2">
-              <button
-                onClick={() => goToMarket('th')}
-                className={`flex-1 text-center text-xs font-semibold py-2 rounded-full transition-colors ${!isUK ? 'bg-ocean-blue text-white' : 'bg-light-gray text-gray-500'}`}
-              >
-                🇹🇭 Thailand
-              </button>
-              <button
-                onClick={() => goToMarket('uk')}
-                className={`flex-1 text-center text-xs font-semibold py-2 rounded-full transition-colors ${isUK ? 'bg-ocean-blue text-white' : 'bg-light-gray text-gray-500'}`}
-              >
-                🇬🇧 UK
-              </button>
-            </div>
             {navLinks.map((link) => (
               <Link
                 key={link.href}
