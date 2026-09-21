@@ -49,7 +49,7 @@
 
 ### 3. 组件重构任务
 
-- [ ] 3.1 重构导航栏组件 (Navbar.tsx)
+- [x] 3.1 重构导航栏组件 (Navbar.tsx)
   - 修改 `e:\mira\components\layout\Navbar.tsx`
   - 移除市场切换器逻辑和UI元素
   - 简化导航链接结构，只保留房产相关链接
@@ -57,14 +57,14 @@
   - 更新导航样式为统一设计
   - _需求: R1.4, R4.1, R4.2_
 
-- [ ]* 3.2 编写导航栏重构的单元测试
+- [x]* 3.2 编写导航栏重构的单元测试
   - 验证不包含市场切换器元素
   - 测试语言切换器功能正常
   - 验证所有导航链接指向正确路径
   - 测试响应式导航菜单功能
   - _需求: R4.1, R4.2_
 
-- [~] 3.3 更新Footer组件链接结构
+- [x] 3.3 更新Footer组件链接结构
   - 修改 `e:\mira\components\layout\Footer.tsx`
   - 移除英国服务相关的链接
   - 更新链接结构为房产展示导向
@@ -72,7 +72,7 @@
   - 保持联系信息和社交媒体链接
   - _需求: R4.4_
 
-- [~] 3.4 验证并优化保留的核心组件
+- [x] 3.4 验证并优化保留的核心组件
   - 确认 `e:\mira\components\home\HeroSection.tsx` 功能正常
   - 确认 `e:\mira\components\home\FeaturedProperties.tsx` 显示正确
   - 确认 `e:\mira\components\property\PropertyCard.tsx` 渲染正确
