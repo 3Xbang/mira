@@ -14,8 +14,8 @@ export default function FloorPlanForm({ plan, projectId, isNew }: { plan: FloorP
   const [form, setForm] = useState({
     name_zh: plan?.name?.zh ?? '',
     description_zh: plan?.description?.zh ?? '',
-    floor_plan_image: plan?.floor_plan_image ?? '',
-    preview_image: plan?.preview_image ?? '',
+    floor_plan_images: plan?.floor_plan_images ?? [] as string[],
+    preview_images: plan?.preview_images ?? [] as string[],
     area_sqm: plan?.area_sqm ?? 0,
     bedrooms: plan?.bedrooms ?? 2,
     bathrooms: plan?.bathrooms ?? 2,
@@ -39,7 +39,15 @@ export default function FloorPlanForm({ plan, projectId, isNew }: { plan: FloorP
       const body = {
         id: plan?.id ?? `plan-${projectId}-${uid()}`,
         project_id: projectId,
-        ...form,
+        floor_plan_images: form.floor_plan_images,
+        preview_images: form.preview_images,
+        area_sqm: form.area_sqm,
+        bedrooms: form.bedrooms,
+        bathrooms: form.bathrooms,
+        floors: form.floors,
+        price_thb: form.price_thb,
+        available_units: form.available_units,
+        sort_order: form.sort_order,
         name: { zh: form.name_zh, ...(plan?.name ?? {}) },
         description: { zh: form.description_zh, ...(plan?.description ?? {}) },
       }
@@ -54,6 +62,7 @@ export default function FloorPlanForm({ plan, projectId, isNew }: { plan: FloorP
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      {/* 户型信息 */}
       <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
         <h2 className="font-semibold text-gray-800">户型信息</h2>
         <div>
@@ -92,16 +101,30 @@ export default function FloorPlanForm({ plan, projectId, isNew }: { plan: FloorP
         </div>
       </div>
 
+      {/* 户型平面图 — 多张 */}
       <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
-        <h2 className="font-semibold text-gray-800">户型平面图</h2>
-        <MultiImageUploader images={form.floor_plan_image ? [form.floor_plan_image] : []} max={1}
-          onChange={imgs => set('floor_plan_image', imgs[0] ?? '')} label="上传平面图（1张）" />
+        <div>
+          <h2 className="font-semibold text-gray-800">户型平面图</h2>
+          <p className="text-xs text-gray-400 mt-0.5">可上传多张平面图，第一张为主图</p>
+        </div>
+        <MultiImageUploader
+          images={form.floor_plan_images}
+          onChange={imgs => set('floor_plan_images', imgs)}
+          label="上传平面图（可多张）"
+        />
       </div>
 
+      {/* 效果图 — 多张 */}
       <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
-        <h2 className="font-semibold text-gray-800">效果图（可选）</h2>
-        <MultiImageUploader images={form.preview_image ? [form.preview_image] : []} max={1}
-          onChange={imgs => set('preview_image', imgs[0] ?? '')} label="上传室内效果图（1张）" />
+        <div>
+          <h2 className="font-semibold text-gray-800">效果图（可选）</h2>
+          <p className="text-xs text-gray-400 mt-0.5">室内外效果图，可上传多张</p>
+        </div>
+        <MultiImageUploader
+          images={form.preview_images}
+          onChange={imgs => set('preview_images', imgs)}
+          label="上传效果图（可多张）"
+        />
       </div>
 
       {error && <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">❌ {error}</div>}

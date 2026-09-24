@@ -4,6 +4,7 @@ import { getProjectById, getFloorPlansByProject } from '@/lib/db'
 import { t as tl } from '@/lib/types'
 import ContactButton from '@/components/common/ContactButton'
 import ProjectNav from '@/components/project/ProjectNav'
+import GalleryGrid from '@/components/project/GalleryGrid'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,18 +38,27 @@ export default async function FloorPlansPage({ params }: { params: Promise<{ loc
             <p>{t('noFloorPlans')}</p>
           </div>
         ) : (
-          <div className="space-y-12">
+          <div className="space-y-16">
             {plans.map((plan) => {
-                const planName = tl(plan.name, locale)
-                const planDesc = tl(plan.description, locale)
+              const planName = tl(plan.name, locale)
+              const planDesc = tl(plan.description, locale)
+              // Support both old single-image and new multi-image fields
+              const floorPlanImgs: string[] = plan.floor_plan_images?.length
+                ? plan.floor_plan_images
+                : (plan as any).floor_plan_image ? [(plan as any).floor_plan_image] : []
+              const previewImgs: string[] = plan.preview_images?.length
+                ? plan.preview_images
+                : (plan as any).preview_image ? [(plan as any).preview_image] : []
+
               return (
                 <div key={plan.id} className="border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm">
+                  {/* Top: info + first floor plan side by side */}
                   <div className="grid md:grid-cols-2 gap-0">
-                    {/* Floor plan image */}
+                    {/* First floor plan image */}
                     <div className="bg-gray-50 p-6 flex items-center justify-center min-h-[300px]">
-                      {plan.floor_plan_image ? (
+                      {floorPlanImgs.length > 0 ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={plan.floor_plan_image} alt={planName}
+                        <img src={floorPlanImgs[0]} alt={planName}
                           className="max-w-full max-h-[400px] object-contain" />
                       ) : (
                         <div className="text-gray-300 text-center">
@@ -104,13 +114,19 @@ export default async function FloorPlansPage({ params }: { params: Promise<{ loc
                     </div>
                   </div>
 
-                  {/* Interior render */}
-                  {plan.preview_image && (
-                    <div className="border-t border-gray-100 p-4">
-                      <p className="text-xs text-gray-400 mb-2 uppercase tracking-wide">{t('interiorRender')}</p>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={plan.preview_image} alt={`${planName} interior`}
-                        className="w-full rounded-xl object-cover max-h-64" />
+                  {/* Extra floor plan images (2nd onwards) */}
+                  {floorPlanImgs.length > 1 && (
+                    <div className="border-t border-gray-100 p-6">
+                      <p className="text-xs text-gray-400 mb-3 uppercase tracking-wide">{t('floorPlan')}</p>
+                      <GalleryGrid images={floorPlanImgs.slice(1)} title={planName} />
+                    </div>
+                  )}
+
+                  {/* Interior renders */}
+                  {previewImgs.length > 0 && (
+                    <div className="border-t border-gray-100 p-6">
+                      <p className="text-xs text-gray-400 mb-3 uppercase tracking-wide">{t('interiorRender')}</p>
+                      <GalleryGrid images={previewImgs} title={`${planName} interior`} />
                     </div>
                   )}
                 </div>

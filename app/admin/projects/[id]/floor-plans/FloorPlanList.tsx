@@ -28,8 +28,8 @@ export default function FloorPlanList({ plans, projectId }: { plans: FloorPlan[]
       {plans.map(p => (
         <div key={p.id} className="bg-white rounded-xl border border-gray-100 p-5 flex gap-4">
           <div className="w-24 h-24 bg-gray-50 rounded-lg overflow-hidden shrink-0 border border-gray-100">
-            {p.floor_plan_image
-              ? <img src={p.floor_plan_image} alt="" className="w-full h-full object-contain" />
+            {(p.floor_plan_images?.[0] ?? (p as any).floor_plan_image)
+              ? <img src={p.floor_plan_images?.[0] ?? (p as any).floor_plan_image} alt="" className="w-full h-full object-contain" />
               : <div className="w-full h-full flex items-center justify-center text-2xl">📐</div>}
           </div>
           <div className="flex-1">

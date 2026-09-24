@@ -35,8 +35,8 @@ export interface Project {
 export interface FloorPlan {
   id: string
   project_id: string
-  floor_plan_image: string    // plan drawing
-  preview_image?: string      // interior render
+  floor_plan_images: string[]   // multiple floor plan drawings
+  preview_images: string[]      // multiple interior renders
   area_sqm: number
   bedrooms: number
   bathrooms: number
@@ -44,7 +44,7 @@ export interface FloorPlan {
   price_thb?: number
   available_units?: number
   sort_order: number
-  name: MultiLangText         // e.g. "Type A — 2 Bed"
+  name: MultiLangText
   description: MultiLangText
   created_at: string
 }
