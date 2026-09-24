@@ -1,6 +1,9 @@
+'use client'
+
 import Link from 'next/link'
 import type { Project } from '@/lib/types'
 import { t as tl } from '@/lib/types'
+import MixedGallery from '@/components/project/MixedGallery'
 
 const STATUS_LABEL: Record<string, Record<string, string>> = {
   en: { on_sale: 'On Sale', coming_soon: 'Coming Soon', sold_out: 'Sold Out' },
@@ -18,32 +21,67 @@ const STATUS_COLOR: Record<string, string> = {
   sold_out: 'bg-gray-400',
 }
 
-export default function ProjectCard({ project, locale }: { project: Project; locale: string }) {
+function fmt(n: number) {
+  if (n >= 1_000_000) return `฿${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`
+  return `฿${(n / 10_000).toFixed(0)}万`
+}
+
+interface Props {
+  project: Project
+  locale: string
+  allImages?: string[]   // pre-fetched mixed images (gallery + floor plan images)
+  priceMin?: number
+  priceMax?: number
+  delivery?: string
+  totalUnits?: number
+}
+
+export default function ProjectCard({ project, locale, allImages, priceMin, priceMax, delivery, totalUnits }: Props) {
   const lang = locale as keyof typeof STATUS_LABEL
   const name = tl(project.name, locale)
   const tagline = tl(project.tagline, locale)
   const statusLabel = STATUS_LABEL[lang]?.[project.status] ?? project.status
   const statusColor = STATUS_COLOR[project.status] ?? 'bg-gray-400'
 
-  const priceFormatted = project.price_from
-    ? `${project.currency ?? 'THB'} ${project.price_from.toLocaleString()}`
+  // Use mixed images if provided, else fall back to gallery/cover
+  const images = allImages?.length
+    ? allImages
+    : project.gallery?.length
+      ? project.gallery
+      : project.cover_image
+        ? [project.cover_image]
+        : []
+
+  const lo = priceMin ?? project.price_from
+  const hi = priceMax
+  const priceStr = lo
+    ? hi && hi > lo
+      ? `${fmt(lo)} – ${fmt(hi)}`
+      : `${fmt(lo)}+`
     : null
+
+  const units = totalUnits ?? project.total_units ?? 0
 
   return (
     <Link href={`/${locale}/projects/${project.id}`}
       className="group block bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow border border-gray-100">
-      {/* Image */}
-      <div className="relative aspect-video bg-gray-100 overflow-hidden">
-        {project.cover_image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={project.cover_image} alt={name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+
+      {/* Mixed gallery */}
+      <div className="relative">
+        {images.length > 0 ? (
+          <MixedGallery
+            images={images}
+            title={name}
+            aspectRatio="video"
+            interval={3500}
+          />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-5xl bg-gradient-to-br from-gray-100 to-gray-200">
+          <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-5xl">
             🏗️
           </div>
         )}
-        <div className={`absolute top-3 left-3 ${statusColor} text-white text-xs font-semibold px-2.5 py-1 rounded-full`}>
+        {/* Status badge */}
+        <div className={`absolute top-3 left-3 z-10 ${statusColor} text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow`}>
           {statusLabel}
         </div>
       </div>
@@ -55,13 +93,13 @@ export default function ProjectCard({ project, locale }: { project: Project; loc
         </h3>
         {tagline && <p className="text-gray-500 text-sm mb-3">{tagline}</p>}
 
-        <div className="flex items-center justify-between text-sm text-gray-500">
-          <div className="flex gap-3">
-            {project.total_units > 0 && <span>🏠 {project.total_units} units</span>}
-            {project.delivery_date && <span>📅 {project.delivery_date}</span>}
+        <div className="flex items-center justify-between text-sm">
+          <div className="flex gap-3 text-gray-400">
+            {units > 0 && <span>🏠 {units} units</span>}
+            {delivery && <span>📅 {delivery}</span>}
           </div>
-          {priceFormatted && (
-            <span className="font-semibold text-ocean-blue">{priceFormatted}+</span>
+          {priceStr && (
+            <span className="font-semibold text-ocean-blue">{priceStr}</span>
           )}
         </div>
       </div>

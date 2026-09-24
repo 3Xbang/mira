@@ -183,3 +183,70 @@ export async function deleteMaterial(id: string): Promise<void> {
   const doc = getDoc()
   await doc.send(new DeleteCommand({ TableName: T_MATERIALS, Key: { id } }))
 }
+
+// ─── Project Summary (auto-aggregated from floor plans) ──────────────────────
+
+export interface ProjectSummary {
+  price_min?: number          // lowest price across all floor plans
+  price_max?: number          // highest price across all floor plans
+  total_units: number         // sum of available_units
+  delivery_earliest?: string  // earliest delivery date
+  delivery_latest?: string    // latest delivery date
+  all_images: string[]        // merged: project gallery + all floor plan images
+  floor_plan_count: number
+}
+
+export async function getProjectSummary(
+  projectId: string,
+  projectGallery: string[] = []
+): Promise<ProjectSummary> {
+  const plans = await getFloorPlansByProject(projectId).catch(() => [])
+
+  let price_min: number | undefined
+  let price_max: number | undefined
+  let total_units = 0
+  let delivery_earliest: string | undefined
+  let delivery_latest: string | undefined
+  const planImages: string[] = []
+
+  for (const p of plans) {
+    // Price range
+    const lo = p.price_min_thb ?? p.price_thb
+    const hi = p.price_max_thb ?? p.price_thb
+    if (lo) price_min = price_min === undefined ? lo : Math.min(price_min, lo)
+    if (hi) price_max = price_max === undefined ? hi : Math.max(price_max, hi)
+
+    // Units
+    total_units += p.available_units ?? 0
+
+    // Delivery dates (sort lexicographically — "2026-Q4" < "2027-Q2" works fine)
+    if (p.delivery_date) {
+      if (!delivery_earliest || p.delivery_date < delivery_earliest) delivery_earliest = p.delivery_date
+      if (!delivery_latest || p.delivery_date > delivery_latest) delivery_latest = p.delivery_date
+    }
+
+    // Images: collect floor plan images + preview images per plan
+    for (const img of p.floor_plan_images ?? []) if (img) planImages.push(img)
+    for (const img of p.preview_images ?? []) if (img) planImages.push(img)
+    // legacy single-image fields
+    if ((p as any).floor_plan_image) planImages.push((p as any).floor_plan_image)
+    if ((p as any).preview_image) planImages.push((p as any).preview_image)
+  }
+
+  // Merge: project gallery first, then floor plan images (deduplicated)
+  const seen = new Set<string>()
+  const all_images: string[] = []
+  for (const img of [...projectGallery, ...planImages]) {
+    if (img && !seen.has(img)) { seen.add(img); all_images.push(img) }
+  }
+
+  return {
+    price_min,
+    price_max,
+    total_units,
+    delivery_earliest,
+    delivery_latest,
+    all_images,
+    floor_plan_count: plans.length,
+  }
+}

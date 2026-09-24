@@ -1,7 +1,6 @@
 ﻿import type { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
 import ContactButton from '@/components/common/ContactButton'
-import { getProjects } from '@/lib/db'
+import { getProjects, getProjectSummary } from '@/lib/db'
 import { getSiteSettings } from '@/lib/properties'
 import ProjectCard from '@/components/home/ProjectCard'
 import HeroSection from '@/components/home/HeroSection'
@@ -37,8 +36,15 @@ export default async function HomePage({ params }: HomePageProps) {
     getSiteSettings().catch(() => ({ whatsapp: '66812345678', lineId: 'mira_samui' })),
   ])
 
-  // Collect hero images from all projects
-  const heroImages = projects.flatMap(p => p.gallery?.slice(0, 2) ?? []).filter(Boolean)
+  // For each project, fetch aggregated summary (images + price + delivery)
+  const summaries = await Promise.all(
+    projects.map(p => getProjectSummary(p.id, p.gallery ?? []).catch(() => null))
+  )
+
+  // Hero images: mix all project images together
+  const heroImages = summaries
+    .flatMap(s => s?.all_images?.slice(0, 3) ?? [])
+    .filter(Boolean)
 
   return (
     <main>
@@ -61,9 +67,21 @@ export default async function HomePage({ params }: HomePageProps) {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 gap-6">
-              {projects.map(project => (
-                <ProjectCard key={project.id} project={project} locale={locale} />
-              ))}
+              {projects.map((project, i) => {
+                const s = summaries[i]
+                return (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    locale={locale}
+                    allImages={s?.all_images}
+                    priceMin={s?.price_min}
+                    priceMax={s?.price_max}
+                    delivery={s?.delivery_earliest}
+                    totalUnits={s?.total_units}
+                  />
+                )
+              })}
             </div>
           )}
         </div>
