@@ -4,6 +4,8 @@ import { getTranslations } from 'next-intl/server'
 import { getAllProperties, getPropertyById } from '@/lib/properties'
 import { locales } from '@/i18n'
 import ImageCarousel from '@/components/property/ImageCarousel'
+
+export const dynamic = 'force-dynamic'
 import PanoramaViewer from '@/components/property/PanoramaViewer'
 import ContactButton from '@/components/common/ContactButton'
 
@@ -58,14 +60,6 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
       images: [image],
     },
   }
-}
-
-// Generate static routes for all locale × property id combinations
-export async function generateStaticParams() {
-  const properties = await getAllProperties()
-  return locales.flatMap((locale) =>
-    properties.map((p) => ({ locale, id: String(p.id) }))
-  )
 }
 
 // Bedroom icon
