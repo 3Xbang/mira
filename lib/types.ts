@@ -32,6 +32,24 @@ export interface Project {
 
 // ─── Floor Plan ──────────────────────────────────────────────────────────────
 
+export interface RentalInvestment {
+  // Monthly rental
+  monthly_rent_thb?: number        // monthly rent (THB)
+  monthly_occupancy_rate?: number  // occupancy rate % e.g. 85
+  monthly_annual_income?: number   // annual income (THB)
+  monthly_roi?: number             // annual ROI % e.g. 7.5
+  monthly_payback_years?: number   // payback period (years)
+  monthly_mgmt_fee?: number        // annual management fee (THB)
+
+  // Daily / short-stay rental
+  daily_rent_thb?: number          // nightly rate (THB)
+  daily_occupancy_rate?: number    // occupancy rate % e.g. 70
+  daily_annual_income?: number     // annual income (THB)
+  daily_roi?: number               // annual ROI % e.g. 9.0
+  daily_payback_years?: number     // payback period (years)
+  daily_mgmt_fee?: number          // annual management fee (THB)
+}
+
 export interface FloorPlan {
   id: string
   project_id: string
@@ -41,9 +59,14 @@ export interface FloorPlan {
   bedrooms: number
   bathrooms: number
   floors?: number
-  price_thb?: number
+  // Price range
+  price_min_thb?: number        // minimum price (THB)
+  price_max_thb?: number        // maximum price (THB)
+  price_thb?: number            // legacy single price (kept for backward compat)
   available_units?: number
+  delivery_date?: string        // e.g. "2027-Q2"
   sort_order: number
+  investment?: RentalInvestment
   name: MultiLangText
   description: MultiLangText
   created_at: string
