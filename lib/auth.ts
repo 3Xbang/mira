@@ -42,10 +42,28 @@ export function isAuthenticated(): boolean {
 }
 
 export function checkCredentials(username: string, password: string): boolean {
-  return (
+  // Primary admin account
+  if (
     username === (process.env.ADMIN_USERNAME ?? 'admin') &&
     password === (process.env.ADMIN_PASSWORD ?? 'Mira@2026!')
-  )
+  ) return true
+
+  // Additional admin accounts from env (format: ADMIN_USER_2=username:password)
+  const extra = [
+    process.env.ADMIN_USER_2,
+    process.env.ADMIN_USER_3,
+    process.env.ADMIN_USER_4,
+  ].filter(Boolean)
+
+  for (const entry of extra) {
+    const idx = entry!.indexOf(':')
+    if (idx === -1) continue
+    const u = entry!.slice(0, idx)
+    const p = entry!.slice(idx + 1)
+    if (username === u && password === p) return true
+  }
+
+  return false
 }
 
 export { SESSION_COOKIE }
