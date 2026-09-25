@@ -2,7 +2,37 @@ import type { AIAnalysisResult, RepairCategory } from './repair-types'
 import { MINIMUM_LABOR_FEE } from './repair-types'
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent'
+const GEMINI_MODELS = [
+  'gemini-3.8-flash',
+  'gemini-flash-latest',
+  'gemini-pro-latest',
+]
+
+async function callGemini(model: string, body: object, apiKey: string): Promise<any> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
+  const isAuthKey = apiKey.startsWith('AQ.')
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (isAuthKey) {
+    headers['x-goog-api-key'] = apiKey
+  } else {
+    Object.assign(headers, { 'x-goog-api-key': apiKey })
+  }
+
+  const res = await fetch(isAuthKey ? url : `${url}?key=${apiKey}`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body),
+  })
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    const status = (err as any)?.error?.code
+    const msg = (err as any)?.error?.message ?? 'Unknown error'
+    throw Object.assign(new Error(msg), { status })
+  }
+
+  return res.json()
+}
 
 const SYSTEM_PROMPT = `You are an expert Thai home repair and construction estimator.
 Analyze the provided images and return a JSON object with repair/construction assessment.
@@ -57,56 +87,50 @@ export async function analyzeRepairImages(
     ? `Customer description (${language}): "${userDescription}"`
     : 'No additional description provided.'
 
-  // AQ. auth keys use x-goog-api-key header (new format from May 2026)
-  // AIzaSy... standard keys use ?key= query param (legacy)
-  const isAuthKey = GEMINI_API_KEY.startsWith('AQ.')
-  const url = isAuthKey
-    ? GEMINI_URL
-    : `${GEMINI_URL}?key=${GEMINI_API_KEY}`
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-  if (isAuthKey) headers['x-goog-api-key'] = GEMINI_API_KEY
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({
-      contents: [{
-        parts: [
-          { text: SYSTEM_PROMPT },
-          { text: userNote },
-          ...imageParts,
-        ],
-      }],
-      generationConfig: {
-        temperature: 0.3,
-        maxOutputTokens: 1024,
-      },
-    }),
-  })
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}))
-    throw new Error(`Gemini API error: ${JSON.stringify(err)}`)
+  const requestBody = {
+    contents: [{
+      parts: [
+        { text: SYSTEM_PROMPT },
+        { text: userNote },
+        ...imageParts,
+      ],
+    }],
+    generationConfig: {
+      temperature: 0.3,
+      maxOutputTokens: 1024,
+    },
   }
 
-  const data = await res.json()
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
-
-  // Extract JSON from response
-  const jsonMatch = text.match(/\{[\s\S]*\}/)
-  if (!jsonMatch) throw new Error('No JSON in Gemini response')
-
-  const result = JSON.parse(jsonMatch[0]) as AIAnalysisResult
-
-  // Enforce minimum labor fee
-  if (result.estimated_labor_min < MINIMUM_LABOR_FEE) {
-    result.estimated_labor_min = MINIMUM_LABOR_FEE
+  // Try each model with retries on 503
+  let lastError: Error = new Error('All models failed')
+  for (const model of GEMINI_MODELS) {
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const data = await callGemini(model, requestBody, GEMINI_API_KEY)
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
+        const jsonMatch = text.match(/\{[\s\S]*\}/)
+        if (!jsonMatch) throw new Error('No JSON in Gemini response')
+        const result = JSON.parse(jsonMatch[0]) as AIAnalysisResult
+        // Enforce minimum labor fee
+        if (result.estimated_labor_min < MINIMUM_LABOR_FEE) result.estimated_labor_min = MINIMUM_LABOR_FEE
+        if (result.estimated_labor_max < result.estimated_labor_min) result.estimated_labor_max = result.estimated_labor_min
+        return result
+      } catch (err: any) {
+        lastError = err
+        // 503 = overloaded, retry after short wait
+        if (err.status === 503) {
+          if (attempt < 3) await new Promise(r => setTimeout(r, attempt * 1500))
+          continue
+        }
+        // 404 = model not available, try next model
+        if (err.status === 404) break
+        // Other errors, throw immediately
+        throw err
+      }
+    }
   }
-  if (result.estimated_labor_max < result.estimated_labor_min) {
-    result.estimated_labor_max = result.estimated_labor_min
-  }
 
-  return result
+  throw lastError
 }
 
 /** Generate a unique order ID */

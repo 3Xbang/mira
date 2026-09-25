@@ -205,17 +205,33 @@ export default function RepairPage() {
     if (images.length === 0) return
     setAnalyzing(true)
     try {
-      const res = await fetch('/api/repair/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ images, description, language: lang }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
-      setAnalysis(data)
-      setStep(2)
+      let lastErr: any
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const res = await fetch('/api/repair/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ images, description, language: lang }),
+          })
+          const data = await res.json()
+          if (!res.ok) throw new Error(data.error)
+          setAnalysis(data)
+          setStep(2)
+          return
+        } catch (e: any) {
+          lastErr = e
+          // Wait before retry
+          if (attempt < 2) await new Promise(r => setTimeout(r, 2000))
+        }
+      }
+      throw lastErr
     } catch (e: any) {
-      alert('Analysis failed: ' + e.message)
+      const msg = lang === 'zh'
+        ? 'AI分析暂时繁忙，请重试'
+        : lang === 'th'
+        ? 'AI ยุ่งอยู่ กรุณาลองใหม่'
+        : 'AI is busy, please try again'
+      alert(msg)
     } finally {
       setAnalyzing(false)
     }
