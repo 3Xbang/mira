@@ -82,78 +82,79 @@ export default function FloorPlanTabs({ plans, locale, labels, defaultIndex = 0 
       {/* ── Active floor plan detail ── */}
       <div className="border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm">
 
-        {/* Top: floor plan image + info */}
-        <div className="grid md:grid-cols-2 gap-0">
-          {/* First floor plan image */}
-          <div className="bg-gray-50 p-6 flex items-center justify-center min-h-[300px]">
-            {floorPlanImgs.length > 0 ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={floorPlanImgs[0]} alt={planName}
-                className="max-w-full max-h-[420px] object-contain" />
-            ) : (
-              <div className="text-gray-300 text-center">
-                <div className="text-5xl mb-2">📐</div>
-                <p className="text-sm">{labels.floorPlan}</p>
+      {/* Top: floor plan image FULL WIDTH, then info below */}
+      <div className="flex flex-col">
+        {/* Full-width image */}
+        <div className="w-full bg-gray-50 flex items-center justify-center overflow-hidden rounded-t-2xl"
+          style={{ minHeight: '320px', maxHeight: '520px' }}>
+          {floorPlanImgs.length > 0 ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={floorPlanImgs[0]} alt={planName}
+              className="w-full h-full object-cover" style={{ maxHeight: '520px' }} />
+          ) : (
+            <div className="text-gray-300 text-center py-16">
+              <div className="text-6xl mb-3">📐</div>
+              <p className="text-sm">{labels.floorPlan}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Info panel below the image */}
+        <div className="p-8 flex flex-col gap-6">
+          <h2 className="text-3xl font-bold text-gray-900">{planName}</h2>
+
+          {/* Badges */}
+          <div className="flex flex-wrap gap-3">
+            {priceStr && (
+              <span className="inline-flex items-center gap-2 bg-sky-50 text-sky-700 border border-sky-200 px-4 py-2 rounded-full text-base font-semibold">
+                💰 {priceStr}
+              </span>
+            )}
+            {plan.delivery_date && (
+              <span className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200 px-4 py-2 rounded-full text-base font-semibold">
+                📅 {plan.delivery_date}
+              </span>
+            )}
+            {plan.available_units != null && plan.available_units > 0 && (
+              <span className="inline-flex items-center gap-2 bg-amber-50 text-amber-700 border border-amber-200 px-4 py-2 rounded-full text-base font-semibold">
+                🏠 {plan.available_units} {locale === 'zh' ? '套' : locale === 'ru' ? 'ед.' : 'units'}
+              </span>
+            )}
+          </div>
+
+          {/* Stat chips — larger grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {plan.bedrooms > 0 && (
+              <div className="bg-gray-50 rounded-2xl p-5 text-center">
+                <p className="text-4xl font-bold text-gray-900">{plan.bedrooms}</p>
+                <p className="text-sm text-gray-500 mt-1">{labels.bedrooms}</p>
+              </div>
+            )}
+            {plan.bathrooms > 0 && (
+              <div className="bg-gray-50 rounded-2xl p-5 text-center">
+                <p className="text-4xl font-bold text-gray-900">{plan.bathrooms}</p>
+                <p className="text-sm text-gray-500 mt-1">{labels.bathrooms}</p>
+              </div>
+            )}
+            {plan.area_sqm > 0 && (
+              <div className="bg-gray-50 rounded-2xl p-5 text-center">
+                <p className="text-4xl font-bold text-gray-900">{plan.area_sqm}</p>
+                <p className="text-sm text-gray-500 mt-1">{labels.area} m²</p>
+              </div>
+            )}
+            {plan.floors != null && plan.floors > 0 && (
+              <div className="bg-gray-50 rounded-2xl p-5 text-center">
+                <p className="text-4xl font-bold text-gray-900">{plan.floors}</p>
+                <p className="text-sm text-gray-500 mt-1">{labels.floors}</p>
               </div>
             )}
           </div>
 
-          {/* Info panel */}
-          <div className="p-8 flex flex-col justify-center gap-5">
-            <h2 className="text-2xl font-bold text-gray-900">{planName}</h2>
-
-            {/* Badges */}
-            <div className="flex flex-wrap gap-2">
-              {priceStr && (
-                <span className="inline-flex items-center gap-1.5 bg-sky-50 text-sky-700 border border-sky-200 px-3 py-1.5 rounded-full text-sm font-semibold">
-                  💰 {priceStr}
-                </span>
-              )}
-              {plan.delivery_date && (
-                <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-full text-sm font-semibold">
-                  📅 {plan.delivery_date}
-                </span>
-              )}
-              {plan.available_units != null && plan.available_units > 0 && (
-                <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-full text-sm font-semibold">
-                  🏠 {plan.available_units} {locale === 'zh' ? '套' : locale === 'ru' ? 'ед.' : 'units'}
-                </span>
-              )}
-            </div>
-
-            {/* Stat chips */}
-            <div className="grid grid-cols-2 gap-3">
-              {plan.bedrooms > 0 && (
-                <div className="bg-gray-50 rounded-xl p-3 text-center">
-                  <p className="text-2xl font-bold text-gray-900">{plan.bedrooms}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{labels.bedrooms}</p>
-                </div>
-              )}
-              {plan.bathrooms > 0 && (
-                <div className="bg-gray-50 rounded-xl p-3 text-center">
-                  <p className="text-2xl font-bold text-gray-900">{plan.bathrooms}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{labels.bathrooms}</p>
-                </div>
-              )}
-              {plan.area_sqm > 0 && (
-                <div className="bg-gray-50 rounded-xl p-3 text-center">
-                  <p className="text-2xl font-bold text-gray-900">{plan.area_sqm}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{labels.area} m²</p>
-                </div>
-              )}
-              {plan.floors != null && plan.floors > 0 && (
-                <div className="bg-gray-50 rounded-xl p-3 text-center">
-                  <p className="text-2xl font-bold text-gray-900">{plan.floors}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{labels.floors}</p>
-                </div>
-              )}
-            </div>
-
-            {planDesc && (
-              <p className="text-gray-600 text-sm leading-relaxed">{planDesc}</p>
-            )}
-          </div>
+          {planDesc && (
+            <p className="text-gray-600 text-lg leading-relaxed">{planDesc}</p>
+          )}
         </div>
+      </div>
 
         {/* Investment returns */}
         {plan.investment && (
