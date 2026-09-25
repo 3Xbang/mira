@@ -2,7 +2,7 @@ import type { AIAnalysisResult } from './repair-types'
 import { MINIMUM_LABOR_FEE } from './repair-types'
 
 const MINIMUM_WORKERS = 2
- ?? '585f661b508466415d6917249a6f3b3c'
+const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID ?? '585f661b508466415d6917249a6f3b3c'
 const CF_API_TOKEN = process.env.CF_API_TOKEN
 const CF_MODEL = '@cf/meta/llama-3.2-11b-vision-instruct'
 
