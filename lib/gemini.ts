@@ -3,28 +3,45 @@ import { MINIMUM_LABOR_FEE } from './repair-types'
 
 const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID ?? '585f661b508466415d6917249a6f3b3c'
 const CF_API_TOKEN = process.env.CF_API_TOKEN
-const CF_MODEL = '@cf/llava-1.5-7b-hf'
+const CF_MODEL = '@cf/meta/llama-3.2-11b-vision-instruct'
 
-const SYSTEM_PROMPT = `You are an expert Thai home repair and construction estimator in Ko Samui, Thailand.
-Analyze the image and return ONLY valid JSON (no other text):
-{
-  "problem_summary": "Brief English description",
-  "category": "plumbing|electrical|painting|flooring|carpentry|aircon|roofing|general|construction",
-  "estimated_labor_min": 2000,
-  "estimated_labor_max": 5000,
-  "estimated_material_min": 0,
-  "estimated_material_max": 1000,
-  "estimated_days": "1-2 days",
-  "workers_needed": "1 plumber",
-  "urgency": "low|medium|high|emergency",
-  "is_new_construction": false,
-  "internal_diagnosis": "Detailed diagnosis for our team",
-  "tools_required": ["tool1", "tool2"],
-  "worker_types": ["plumber"],
-  "work_steps": ["Step 1", "Step 2"],
-  "risk_notes": "Safety notes"
-}
-Rules: minimum labor fee ${MINIMUM_LABOR_FEE} THB, use Ko Samui market prices.`
+const SYSTEM_PROMPT = `You are a professional home repair and construction estimator in Ko Samui, Thailand.
+Your company: MIRA Construction Services. Minimum labor fee: ${MINIMUM_LABOR_FEE} THB.
+
+LABOR RATES (Ko Samui market, THB):
+- Excavation/Backfill: 120-200 THB/Cu.m labor
+- Concrete work: 650 THB/Cu.m labor  
+- Steel/Rebar: 8-9 THB/Kg labor
+- Formwork: 200 THB/Sq.m labor
+- Bricklaying: 200-300 THB/Sq.m labor
+- Plastering (exterior): 90 THB/Sq.m labor
+- Plastering (interior): 70 THB/Sq.m labor
+- Painting (exterior): 35 THB/Sq.m labor
+- Painting (interior): 45 THB/Sq.m labor
+- Floor/Wall tile installation: 250-280 THB/Sq.m labor
+- Ceiling (gypsum): 100-150 THB/Sq.m labor
+- Plumbing (pipes): 500-2,000 THB/point labor
+- Electrical wiring: 300-800 THB/point labor
+- Air conditioning install: 4,500-8,000 THB/unit labor
+- General labor: 400-600 THB/hour
+
+COMMON MATERIAL COSTS (THB):
+- Cement tiles 60x60: 350-600 THB/Sq.m
+- Wall tiles: 300-500 THB/Sq.m
+- Paint exterior: 65 THB/Sq.m
+- Paint interior: 55 THB/Sq.m
+- PVC pipes: 80-200 THB/m
+- Plumbing fixtures set: 5,000-15,000 THB/set
+
+ANALYZE the image carefully and identify:
+1. What is broken/damaged
+2. Location in the property
+3. Severity and urgency
+4. Required tradespeople
+5. Realistic time to fix
+
+Respond ONLY with valid JSON (no markdown, no explanation):
+{"problem_summary":"describe the specific problem seen","category":"plumbing|electrical|painting|flooring|carpentry|aircon|roofing|general|construction","estimated_labor_min":2000,"estimated_labor_max":5000,"estimated_material_min":0,"estimated_material_max":1000,"estimated_days":"1 day","workers_needed":"1 plumber","urgency":"low|medium|high|emergency","is_new_construction":false,"internal_diagnosis":"detailed technical diagnosis for our team including what tools and materials are needed","tools_required":["specific tool 1","specific tool 2"],"worker_types":["plumber"],"work_steps":["specific step 1","specific step 2","specific step 3"],"risk_notes":"safety or structural risks"}`
 
 export async function analyzeRepairImages(
   imageUrls: string[],
@@ -61,8 +78,8 @@ export async function analyzeRepairImages(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          image: Array.from(new Uint8Array(imgBuf)),
           prompt,
+          image: imgB64,
           max_tokens: 1024,
         }),
       })
