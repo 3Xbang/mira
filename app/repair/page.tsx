@@ -4,6 +4,7 @@ import { useState, useRef } from 'react'
 import type { AIAnalysisResult } from '@/lib/repair-types'
 import { CATEGORY_LABELS, MINIMUM_LABOR_FEE, DEPOSIT_RATE } from '@/lib/repair-types'
 import Link from 'next/link'
+import RepairDescriptionForm from '@/components/repair/RepairDescriptionForm'
 
 // ─── Translations ─────────────────────────────────────────────────────────────
 
@@ -180,6 +181,7 @@ export default function RepairPage() {
   const [images, setImages] = useState<string[]>([])
   const [previews, setPreviews] = useState<string[]>([])
   const [description, setDescription] = useState('')
+  const [category, setCategory] = useState('')
   const [uploading, setUploading] = useState(false)
   const [analyzing, setAnalyzing] = useState(false)
   const [analysis, setAnalysis] = useState<AIAnalysisResult | null>(null)
@@ -371,31 +373,18 @@ export default function RepairPage() {
               )}
             </div>
 
-            {/* Description */}
+            {/* Description — guided form */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <label className="block font-bold text-gray-900 mb-3">💬 {t.descLabel}</label>
-
-              {/* Hint chips */}
-              {'descHints' in t && (
-                <div className="mb-3 space-y-1.5">
-                  {(t as any).descHints.map((hint: string, i: number) => (
-                    <div key={i} className="text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-1.5">
-                      {hint}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <textarea value={description} onChange={e => setDescription(e.target.value)}
-                rows={5}
-                placeholder={
-                  lang === 'zh'
-                    ? '例如：主卧天花板漏水，靠近窗户那边，大概1平米范围，下雨后加重，有水渍...'
-                    : lang === 'th'
-                    ? 'เช่น น้ำรั่วจากเพดานห้องนอนใหญ่ ใกล้หน้าต่าง ประมาณ 1 ตร.ม. แย่ลงหลังฝนตก...'
-                    : 'e.g. Water leaking from master bedroom ceiling near window, about 1 sq.m area, gets worse after rain, has water stains...'
-                }
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 resize-none" />
+              <h2 className="font-bold text-gray-900 text-lg mb-4">
+                {lang === 'zh' ? '🔍 描述问题' : lang === 'th' ? '🔍 อธิบายปัญหา' : '🔍 Describe the Problem'}
+              </h2>
+              <RepairDescriptionForm
+                lang={lang}
+                onChange={(desc, cat) => {
+                  setDescription(desc)
+                  setCategory(cat)
+                }}
+              />
             </div>
 
             {/* Analyze button */}
