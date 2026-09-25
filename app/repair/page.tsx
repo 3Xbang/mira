@@ -16,8 +16,15 @@ const T = {
     step3: 'Book & Pay',
     uploadLabel: 'Upload photos of the issue (max 5)',
     uploadHint: 'JPG · PNG · WebP · Max 5 photos',
-    descLabel: 'Describe the issue (optional)',
-    descPlaceholder: 'e.g. Water leaking from ceiling in bedroom...',
+    descLabel: 'Describe the problem (helps AI give better estimate)',
+    descPlaceholder: '',
+    descHints: [
+      '📍 Location: Which room or area? (e.g. Master bedroom, Kitchen, Bathroom 2)',
+      '🔍 Problem: What exactly is wrong? (e.g. Water leaking from ceiling, Pipe burst, Paint peeling)',
+      '⏱️ How long: When did it start? (e.g. Since yesterday, After last rain)',
+      '⚠️ Urgency: Is it getting worse? Any safety risk?',
+      '📐 Size: Approximate size of affected area (e.g. 2 sq.m, 3 meter pipe)',
+    ],
     analyze: 'Analyze with AI',
     analyzing: 'Analyzing...',
     analysisTitle: 'AI Assessment',
@@ -56,10 +63,17 @@ const T = {
     step1: '上传照片',
     step2: 'AI 分析',
     step3: '预约付款',
-    uploadLabel: '上传问题照片（最多5张）',
+    uploadLabel: '上传问题照片（最多5张，多角度更好）',
     uploadHint: 'JPG · PNG · WebP · 最多5张',
-    descLabel: '描述问题（可选）',
-    descPlaceholder: '例如：卧室天花板漏水...',
+    descLabel: '问题描述（填写越详细，AI报价越准确）',
+    descPlaceholder: '',
+    descHints: [
+      '📍 位置：哪个房间或区域？（如：主卧天花板、厨房水管、2号卫生间）',
+      '🔍 问题：具体什么情况？（如：漏水、管道爆裂、油漆脱落、地板开裂）',
+      '⏱️ 时间：什么时候开始的？（如：昨天开始、上次下雨后）',
+      '⚠️ 紧急程度：是否在加重？有没有安全隐患？',
+      '📐 面积：大概影响多大范围？（如：约2平米、3米管道）',
+    ],
     analyze: 'AI 智能分析',
     analyzing: '分析中...',
     analysisTitle: 'AI 评估报告',
@@ -98,10 +112,17 @@ const T = {
     step1: 'อัปโหลดรูปภาพ',
     step2: 'AI วิเคราะห์',
     step3: 'จองและชำระ',
-    uploadLabel: 'อัปโหลดรูปปัญหา (สูงสุด 5 รูป)',
+    uploadLabel: 'อัปโหลดรูปปัญหา (สูงสุด 5 รูป หลายมุมยิ่งดี)',
     uploadHint: 'JPG · PNG · WebP · สูงสุด 5 รูป',
-    descLabel: 'อธิบายปัญหา (ไม่บังคับ)',
-    descPlaceholder: 'เช่น น้ำรั่วจากเพดานในห้องนอน...',
+    descLabel: 'อธิบายปัญหา (ยิ่งละเอียด AI ยิ่งแม่นยำ)',
+    descPlaceholder: '',
+    descHints: [
+      '📍 ตำแหน่ง: ห้องหรือบริเวณใด? (เช่น ห้องนอนใหญ่ ห้องครัว ห้องน้ำ 2)',
+      '🔍 ปัญหา: มีอะไรผิดปกติ? (เช่น น้ำรั่ว ท่อแตก สีหลุด พื้นแตก)',
+      '⏱️ ระยะเวลา: เริ่มเมื่อไหร่? (เช่น เมื่อวาน หลังฝนตกครั้งล่าสุด)',
+      '⚠️ ความเร่งด่วน: แย่ลงไหม? มีความเสี่ยงด้านความปลอดภัยไหม?',
+      '📐 ขนาด: พื้นที่ที่ได้รับผลกระทบประมาณเท่าไหร่? (เช่น 2 ตร.ม. ท่อ 3 เมตร)',
+    ],
     analyze: 'วิเคราะห์ด้วย AI',
     analyzing: 'กำลังวิเคราะห์...',
     analysisTitle: 'ผลการวิเคราะห์ AI',
@@ -353,8 +374,27 @@ export default function RepairPage() {
             {/* Description */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
               <label className="block font-bold text-gray-900 mb-3">💬 {t.descLabel}</label>
+
+              {/* Hint chips */}
+              {'descHints' in t && (
+                <div className="mb-3 space-y-1.5">
+                  {(t as any).descHints.map((hint: string, i: number) => (
+                    <div key={i} className="text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-1.5">
+                      {hint}
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <textarea value={description} onChange={e => setDescription(e.target.value)}
-                rows={3} placeholder={t.descPlaceholder}
+                rows={5}
+                placeholder={
+                  lang === 'zh'
+                    ? '例如：主卧天花板漏水，靠近窗户那边，大概1平米范围，下雨后加重，有水渍...'
+                    : lang === 'th'
+                    ? 'เช่น น้ำรั่วจากเพดานห้องนอนใหญ่ ใกล้หน้าต่าง ประมาณ 1 ตร.ม. แย่ลงหลังฝนตก...'
+                    : 'e.g. Water leaking from master bedroom ceiling near window, about 1 sq.m area, gets worse after rain, has water stains...'
+                }
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 resize-none" />
             </div>
 
