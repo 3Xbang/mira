@@ -170,7 +170,7 @@ export default async function ProjectPage({
 
                 return (
                   <Link key={plan.id}
-                    href={`/${locale}/projects/${id}/floor-plans`}
+                    href={`/${locale}/projects/${id}/floor-plans?plan=${plan.id}`}
                     className="group bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                     {/* Thumbnail */}
                     <div className="aspect-video bg-gray-50 overflow-hidden">

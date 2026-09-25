@@ -17,6 +17,7 @@ function formatPrice(min?: number, max?: number, legacy?: number): string | null
 interface Props {
   plans: FloorPlan[]
   locale: string
+  defaultIndex?: number
   labels: {
     floorPlan: string
     interiorRender: string
@@ -28,8 +29,8 @@ interface Props {
   }
 }
 
-export default function FloorPlanTabs({ plans, locale, labels }: Props) {
-  const [active, setActive] = useState(0)
+export default function FloorPlanTabs({ plans, locale, labels, defaultIndex = 0 }: Props) {
+  const [active, setActive] = useState(defaultIndex)
 
   if (plans.length === 0) {
     return (

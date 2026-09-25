@@ -8,8 +8,16 @@ import FloorPlanTabs from '@/components/project/FloorPlanTabs'
 
 export const dynamic = 'force-dynamic'
 
-export default async function FloorPlansPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
+export default async function FloorPlansPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string; id: string }>
+  searchParams: Promise<{ plan?: string }>
+}) {
   const { locale, id } = await params
+  const { plan: defaultPlanId } = await searchParams
+
   const [project, plans] = await Promise.all([
     getProjectById(id).catch(() => null),
     getFloorPlansByProject(id).catch(() => []),
@@ -18,6 +26,11 @@ export default async function FloorPlansPage({ params }: { params: Promise<{ loc
 
   const t = await getTranslations('project')
   const name = tl(project.name, locale)
+
+  // Find the default tab index based on ?plan= param
+  const defaultIndex = defaultPlanId
+    ? Math.max(0, plans.findIndex(p => p.id === defaultPlanId))
+    : 0
 
   const labels = {
     floorPlan: t('floorPlan'),
@@ -47,7 +60,12 @@ export default async function FloorPlansPage({ params }: { params: Promise<{ loc
       <ProjectNav locale={locale} projectId={id} active="floor-plans" />
 
       <div className="max-w-5xl mx-auto px-6 py-12">
-        <FloorPlanTabs plans={plans} locale={locale} labels={labels} />
+        <FloorPlanTabs
+          plans={plans}
+          locale={locale}
+          labels={labels}
+          defaultIndex={defaultIndex}
+        />
       </div>
 
       <ContactButton whatsappNumber="66812345678" lineId="mira_samui" />
