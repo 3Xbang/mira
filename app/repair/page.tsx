@@ -453,12 +453,44 @@ export default function RepairPage() {
                       <div className="bg-gray-50 rounded-xl p-4">
                         <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1">{t.workers}</p>
                         <p className="font-semibold text-gray-800">{analysis.workers_needed}</p>
+                        {analysis.workers_count && analysis.workers_count > 1 && (
+                          <p className="text-xs text-gray-500 mt-0.5">
+                            {lang === 'zh' ? `${analysis.workers_count} 人` : lang === 'th' ? `${analysis.workers_count} คน` : `${analysis.workers_count} workers`}
+                          </p>
+                        )}
                       </div>
                       <div className="bg-gray-50 rounded-xl p-4">
                         <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1">{t.timeline}</p>
                         <p className="font-semibold text-gray-800">⏱ {analysis.estimated_days}</p>
                       </div>
                     </div>
+
+                    {/* Materials list */}
+                    {analysis.materials_needed && analysis.materials_needed.length > 0 && (
+                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                        <p className="text-sm font-bold text-amber-900 mb-3">
+                          🪵 {lang === 'zh' ? '所需材料清单' : lang === 'th' ? 'รายการวัสดุที่ต้องใช้' : 'Materials Required'}
+                        </p>
+                        <div className="space-y-2">
+                          {analysis.materials_needed.map((mat, i) => (
+                            <div key={i} className="flex items-center justify-between text-sm">
+                              <span className="text-amber-800 flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 bg-amber-500 rounded-full shrink-0" />
+                                {mat.item}
+                              </span>
+                              <span className="text-amber-700 font-medium shrink-0 ml-2">{mat.quantity}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <p className="text-xs text-amber-600 mt-3">
+                          {lang === 'zh'
+                            ? '⚠️ 材料费用将在现场确认后另计'
+                            : lang === 'th'
+                            ? '⚠️ ค่าวัสดุจะคำนวณแยกหลังตรวจสอบหน้างาน'
+                            : '⚠️ Material costs will be confirmed on-site and billed separately'}
+                        </p>
+                      </div>
+                    )}
 
                     {/* Fees */}
                     <div className="bg-slate-50 rounded-xl p-5 space-y-3">

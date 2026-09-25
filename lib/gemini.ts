@@ -48,7 +48,7 @@ AIR CONDITIONING (supply + install):
 STAIRS: 12,500 THB/unit
 
 ANALYZE the image carefully. Respond ONLY with valid JSON (no markdown, no other text):
-{"problem_summary":"specific problem description","category":"plumbing|electrical|painting|flooring|carpentry|aircon|roofing|general|construction","estimated_labor_min":2000,"estimated_labor_max":5000,"estimated_material_min":0,"estimated_material_max":1000,"estimated_days":"1-2 days","workers_needed":"1 plumber","urgency":"low|medium|high|emergency","is_new_construction":false,"internal_diagnosis":"detailed technical diagnosis for team","tools_required":["tool1","tool2"],"worker_types":["plumber"],"work_steps":["step1","step2","step3"],"risk_notes":"any safety risks"}`
+{"problem_summary":"specific problem description","category":"plumbing|electrical|painting|flooring|carpentry|aircon|roofing|general|construction","estimated_labor_min":2000,"estimated_labor_max":5000,"estimated_material_min":0,"estimated_material_max":1000,"estimated_days":"1-2 days","workers_needed":"1 plumber","workers_count":1,"urgency":"low|medium|high|emergency","is_new_construction":false,"materials_needed":[{"item":"PVC pipe 4 inch","quantity":"2 meters","unit_price_thb":450},{"item":"PVC fittings","quantity":"4 pcs","unit_price_thb":80}],"internal_diagnosis":"detailed technical diagnosis for team","tools_required":["pipe cutter","wrench","sealant"],"worker_types":["plumber"],"worker_count_needed":1,"work_steps":["step1","step2","step3"],"risk_notes":"any safety risks"}`
 
 export async function analyzeRepairImages(
   imageUrls: string[],

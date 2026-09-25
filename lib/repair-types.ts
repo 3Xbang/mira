@@ -23,25 +23,34 @@ export type OrderStatus =
 
 // ─── AI Analysis Result ───────────────────────────────────────────────────────
 
+export interface MaterialItem {
+  item: string          // material name
+  quantity: string      // e.g. "2 meters", "4 pcs"
+  unit_price_thb?: number
+}
+
 export interface AIAnalysisResult {
   // For customer
-  problem_summary: string          // 问题摘要
-  category: RepairCategory         // 工种类别
-  estimated_labor_min: number      // 人工费最低估算 (THB)
-  estimated_labor_max: number      // 人工费最高估算 (THB)
-  estimated_material_min: number   // 材料费最低估算 (THB)
-  estimated_material_max: number   // 材料费最高估算 (THB)
-  estimated_days: string           // 预估工期 e.g. "1天" / "2-3天"
-  workers_needed: string           // 所需工种（给客户看）
+  problem_summary: string
+  category: RepairCategory
+  estimated_labor_min: number
+  estimated_labor_max: number
+  estimated_material_min: number
+  estimated_material_max: number
+  estimated_days: string
+  workers_needed: string
+  workers_count?: number
   urgency: 'low' | 'medium' | 'high' | 'emergency'
-  is_new_construction: boolean     // 是否需要联系洽谈（新建项目）
+  is_new_construction: boolean
+  materials_needed?: MaterialItem[]   // list of materials for customer
 
   // Internal only (for admin)
-  internal_diagnosis: string       // 内部诊断详情
-  tools_required: string[]         // 需要带的工具
-  worker_types: string[]           // 需要派的工人类型
-  work_steps: string[]             // 施工步骤
-  risk_notes: string               // 风险提示
+  internal_diagnosis: string
+  tools_required: string[]
+  worker_types: string[]
+  worker_count_needed?: number
+  work_steps: string[]
+  risk_notes: string
 }
 
 // ─── Order ────────────────────────────────────────────────────────────────────
