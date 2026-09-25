@@ -3,9 +3,10 @@ import { MINIMUM_LABOR_FEE } from './repair-types'
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY
 const GEMINI_MODELS = [
-  'gemini-3.8-flash',
-  'gemini-flash-latest',
-  'gemini-pro-latest',
+  'gemini-3.5-flash',        // stable, good for vision
+  'gemini-3.6-flash',        // fallback
+  'gemini-3.7-flash',        // fallback
+  'gemini-flash-latest',     // dynamic alias
 ]
 
 async function callGemini(model: string, body: object, apiKey: string): Promise<any> {
