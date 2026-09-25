@@ -2,7 +2,7 @@ import type { AIAnalysisResult, RepairCategory } from './repair-types'
 import { MINIMUM_LABOR_FEE } from './repair-types'
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent'
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent'
 
 const SYSTEM_PROMPT = `You are an expert Thai home repair and construction estimator.
 Analyze the provided images and return a JSON object with repair/construction assessment.
@@ -57,9 +57,18 @@ export async function analyzeRepairImages(
     ? `Customer description (${language}): "${userDescription}"`
     : 'No additional description provided.'
 
-  const res = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
+  // AQ. auth keys use x-goog-api-key header (new format from May 2026)
+  // AIzaSy... standard keys use ?key= query param (legacy)
+  const isAuthKey = GEMINI_API_KEY.startsWith('AQ.')
+  const url = isAuthKey
+    ? GEMINI_URL
+    : `${GEMINI_URL}?key=${GEMINI_API_KEY}`
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (isAuthKey) headers['x-goog-api-key'] = GEMINI_API_KEY
+
+  const res = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({
       contents: [{
         parts: [
