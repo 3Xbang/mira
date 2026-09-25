@@ -25,6 +25,11 @@ export default function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // ── 2. Repair & API routes bypass i18n ───────────────────────────────────
+  if (pathname.startsWith('/repair') || pathname.startsWith('/api/')) {
+    return NextResponse.next()
+  }
+
   // ── 2. Redirect legacy UK paths ───────────────────────────────────────────
   if (pathname.includes('/uk')) {
     const locale = pathname.split('/')[1] || 'en'
