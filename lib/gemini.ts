@@ -1,55 +1,30 @@
-import type { AIAnalysisResult, RepairCategory } from './repair-types'
+import type { AIAnalysisResult } from './repair-types'
 import { MINIMUM_LABOR_FEE } from './repair-types'
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY
-const GEMINI_MODELS = [
-  'gemini-3.5-flash',        // stable, good for vision
-  'gemini-3.6-flash',        // fallback
-  'gemini-3.7-flash',        // fallback
-  'gemini-flash-latest',     // dynamic alias
+const SILICONFLOW_API_KEY = process.env.SILICONFLOW_API_KEY
+const SILICONFLOW_URL = 'https://api.siliconflow.cn/v1/chat/completions'
+
+// Vision-capable models on SiliconFlow, in priority order
+const VISION_MODELS = [
+  'deepseek-ai/DeepSeek-V4.1-Flash',
+  'Qwen/Qwen2.5-VL-72B-Instruct',
+  'Qwen/Qwen2-VL-72B-Instruct',
+  'Pro/Qwen/Qwen2-VL-7B-Instruct',
 ]
 
-async function callGemini(model: string, body: object, apiKey: string): Promise<any> {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
-  const isAuthKey = apiKey.startsWith('AQ.')
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-  if (isAuthKey) {
-    headers['x-goog-api-key'] = apiKey
-  } else {
-    Object.assign(headers, { 'x-goog-api-key': apiKey })
-  }
-
-  const res = await fetch(isAuthKey ? url : `${url}?key=${apiKey}`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body),
-  })
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}))
-    const status = (err as any)?.error?.code
-    const msg = (err as any)?.error?.message ?? 'Unknown error'
-    throw Object.assign(new Error(msg), { status })
-  }
-
-  return res.json()
-}
-
-const SYSTEM_PROMPT = `You are an expert Thai home repair and construction estimator.
-Analyze the provided images and return a JSON object with repair/construction assessment.
+const SYSTEM_PROMPT = `You are an expert Thai home repair and construction estimator based in Ko Samui, Thailand.
+Analyze the provided images and return a JSON assessment.
 
 Rules:
 - Minimum labor fee is ${MINIMUM_LABOR_FEE} THB
-- If this appears to be new building construction (not repair/renovation), set is_new_construction: true
-- Be realistic with Thai market prices for Ko Samui area
-- All fees in THB
-- estimated_days format: "1 day" / "2-3 days" / "1 week" etc
+- If this is new building construction (not repair/renovation), set is_new_construction: true
+- Use realistic Ko Samui market prices (THB)
+- estimated_days format: "1 day" / "2-3 days" / "1 week"
 - worker_types examples: ["plumber"], ["electrician"], ["painter", "plasterer"]
-- tools_required: specific tools needed
 
-Respond ONLY with valid JSON matching this exact structure:
+Respond ONLY with valid JSON, no other text:
 {
-  "problem_summary": "Brief description of the issue in English",
+  "problem_summary": "Brief description in English",
   "category": "plumbing|electrical|painting|flooring|carpentry|aircon|roofing|general|construction",
   "estimated_labor_min": 2000,
   "estimated_labor_max": 5000,
@@ -71,61 +46,87 @@ export async function analyzeRepairImages(
   userDescription: string,
   language: 'en' | 'zh' | 'th' = 'en'
 ): Promise<AIAnalysisResult> {
-  if (!GEMINI_API_KEY) throw new Error('GEMINI_API_KEY not configured')
-
-  // Build image parts
-  const imageParts = await Promise.all(
-    imageUrls.slice(0, 5).map(async (url) => {
-      const res = await fetch(url)
-      const buf = await res.arrayBuffer()
-      const b64 = Buffer.from(buf).toString('base64')
-      const mime = res.headers.get('content-type') ?? 'image/jpeg'
-      return { inlineData: { data: b64, mimeType: mime } }
-    })
-  )
+  if (!SILICONFLOW_API_KEY) throw new Error('SILICONFLOW_API_KEY not configured')
 
   const userNote = userDescription
     ? `Customer description (${language}): "${userDescription}"`
-    : 'No additional description provided.'
+    : 'Please analyze the images carefully.'
 
-  const requestBody = {
-    contents: [{
-      parts: [
-        { text: SYSTEM_PROMPT },
-        { text: userNote },
-        ...imageParts,
-      ],
-    }],
-    generationConfig: {
-      temperature: 0.3,
-      maxOutputTokens: 1024,
+  // Build content array with images (OpenAI format)
+  const imageContent = imageUrls.slice(0, 5).map(url => ({
+    type: 'image_url',
+    image_url: { url, detail: 'high' },
+  }))
+
+  const messages = [
+    {
+      role: 'system',
+      content: SYSTEM_PROMPT,
     },
-  }
+    {
+      role: 'user',
+      content: [
+        ...imageContent,
+        { type: 'text', text: userNote },
+      ],
+    },
+  ]
 
-  // Try each model with retries on 503
   let lastError: Error = new Error('All models failed')
-  for (const model of GEMINI_MODELS) {
-    for (let attempt = 1; attempt <= 3; attempt++) {
+
+  for (const model of VISION_MODELS) {
+    for (let attempt = 1; attempt <= 2; attempt++) {
       try {
-        const data = await callGemini(model, requestBody, GEMINI_API_KEY)
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
+        const res = await fetch(SILICONFLOW_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SILICONFLOW_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages,
+            temperature: 0.3,
+            max_tokens: 1024,
+            stream: false,
+          }),
+        })
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}))
+          const code = (err as any)?.error?.code ?? res.status
+          const msg = (err as any)?.error?.message ?? 'API error'
+          const e = Object.assign(new Error(msg), { status: res.status, code })
+          throw e
+        }
+
+        const data = await res.json()
+        const text = data.choices?.[0]?.message?.content ?? ''
+
+        // Extract JSON
         const jsonMatch = text.match(/\{[\s\S]*\}/)
-        if (!jsonMatch) throw new Error('No JSON in Gemini response')
+        if (!jsonMatch) throw new Error('No JSON in response')
+
         const result = JSON.parse(jsonMatch[0]) as AIAnalysisResult
-        // Enforce minimum labor fee
-        if (result.estimated_labor_min < MINIMUM_LABOR_FEE) result.estimated_labor_min = MINIMUM_LABOR_FEE
-        if (result.estimated_labor_max < result.estimated_labor_min) result.estimated_labor_max = result.estimated_labor_min
+
+        // Enforce minimum
+        if (result.estimated_labor_min < MINIMUM_LABOR_FEE)
+          result.estimated_labor_min = MINIMUM_LABOR_FEE
+        if (result.estimated_labor_max < result.estimated_labor_min)
+          result.estimated_labor_max = result.estimated_labor_min
+
         return result
       } catch (err: any) {
         lastError = err
-        // 503 = overloaded, retry after short wait
-        if (err.status === 503) {
-          if (attempt < 3) await new Promise(r => setTimeout(r, attempt * 1500))
+        const status = err.status ?? 0
+        // 429 = rate limit or 503 = busy → retry
+        if (status === 429 || status === 503) {
+          if (attempt < 2) await new Promise(r => setTimeout(r, 2000))
           continue
         }
-        // 404 = model not available, try next model
-        if (err.status === 404) break
-        // Other errors, throw immediately
+        // 400/404 on this model → try next
+        if (status === 400 || status === 404) break
+        // Other errors → throw immediately
         throw err
       }
     }
