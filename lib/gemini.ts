@@ -1,30 +1,14 @@
 import type { AIAnalysisResult } from './repair-types'
 import { MINIMUM_LABOR_FEE } from './repair-types'
 
-const SILICONFLOW_API_KEY = process.env.SILICONFLOW_API_KEY
-const SILICONFLOW_URL = 'https://api.siliconflow.cn/v1/chat/completions'
+const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID ?? '585f661b508466415d6917249a6f3b3c'
+const CF_API_TOKEN = process.env.CF_API_TOKEN
+const CF_MODEL = '@cf/llava-1.5-7b-hf'
 
-// Vision-capable models on SiliconFlow, in priority order
-const VISION_MODELS = [
-  'deepseek-ai/DeepSeek-V4.1-Flash',
-  'Qwen/Qwen2.5-VL-72B-Instruct',
-  'Qwen/Qwen2-VL-72B-Instruct',
-  'Pro/Qwen/Qwen2-VL-7B-Instruct',
-]
-
-const SYSTEM_PROMPT = `You are an expert Thai home repair and construction estimator based in Ko Samui, Thailand.
-Analyze the provided images and return a JSON assessment.
-
-Rules:
-- Minimum labor fee is ${MINIMUM_LABOR_FEE} THB
-- If this is new building construction (not repair/renovation), set is_new_construction: true
-- Use realistic Ko Samui market prices (THB)
-- estimated_days format: "1 day" / "2-3 days" / "1 week"
-- worker_types examples: ["plumber"], ["electrician"], ["painter", "plasterer"]
-
-Respond ONLY with valid JSON, no other text:
+const SYSTEM_PROMPT = `You are an expert Thai home repair and construction estimator in Ko Samui, Thailand.
+Analyze the image and return ONLY valid JSON (no other text):
 {
-  "problem_summary": "Brief description in English",
+  "problem_summary": "Brief English description",
   "category": "plumbing|electrical|painting|flooring|carpentry|aircon|roofing|general|construction",
   "estimated_labor_min": 2000,
   "estimated_labor_max": 5000,
@@ -34,108 +18,84 @@ Respond ONLY with valid JSON, no other text:
   "workers_needed": "1 plumber",
   "urgency": "low|medium|high|emergency",
   "is_new_construction": false,
-  "internal_diagnosis": "Detailed internal diagnosis for our team",
-  "tools_required": ["wrench", "sealant"],
+  "internal_diagnosis": "Detailed diagnosis for our team",
+  "tools_required": ["tool1", "tool2"],
   "worker_types": ["plumber"],
   "work_steps": ["Step 1", "Step 2"],
-  "risk_notes": "Any safety or risk considerations"
-}`
+  "risk_notes": "Safety notes"
+}
+Rules: minimum labor fee ${MINIMUM_LABOR_FEE} THB, use Ko Samui market prices.`
 
 export async function analyzeRepairImages(
   imageUrls: string[],
   userDescription: string,
   language: 'en' | 'zh' | 'th' = 'en'
 ): Promise<AIAnalysisResult> {
-  if (!SILICONFLOW_API_KEY) throw new Error('SILICONFLOW_API_KEY not configured')
+  if (!CF_API_TOKEN) throw new Error('CF_API_TOKEN not configured')
+
+  // Fetch first image and convert to base64
+  const imageUrl = imageUrls[0]
+  if (!imageUrl) throw new Error('No image provided')
+
+  const imgRes = await fetch(imageUrl)
+  if (!imgRes.ok) throw new Error('Failed to fetch image')
+  const imgBuf = await imgRes.arrayBuffer()
+  const imgB64 = Buffer.from(imgBuf).toString('base64')
 
   const userNote = userDescription
-    ? `Customer description (${language}): "${userDescription}"`
-    : 'Please analyze the images carefully.'
+    ? `Customer says (${language}): "${userDescription}". `
+    : ''
 
-  // Build content array with images (OpenAI format)
-  const imageContent = imageUrls.slice(0, 5).map(url => ({
-    type: 'image_url',
-    image_url: { url, detail: 'high' },
-  }))
+  const prompt = `${userNote}${SYSTEM_PROMPT}`
 
-  const messages = [
-    {
-      role: 'system',
-      content: SYSTEM_PROMPT,
-    },
-    {
-      role: 'user',
-      content: [
-        ...imageContent,
-        { type: 'text', text: userNote },
-      ],
-    },
-  ]
+  const url = `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/ai/run/${CF_MODEL}`
 
-  let lastError: Error = new Error('All models failed')
+  let lastError: Error = new Error('Analysis failed')
 
-  for (const model of VISION_MODELS) {
-    for (let attempt = 1; attempt <= 2; attempt++) {
-      try {
-        const res = await fetch(SILICONFLOW_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${SILICONFLOW_API_KEY}`,
-          },
-          body: JSON.stringify({
-            model,
-            messages,
-            temperature: 0.3,
-            max_tokens: 1024,
-            stream: false,
-          }),
-        })
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${CF_API_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          image: Array.from(new Uint8Array(imgBuf)),
+          prompt,
+          max_tokens: 1024,
+        }),
+      })
 
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}))
-          const code = (err as any)?.error?.code ?? res.status
-          const msg = (err as any)?.error?.message ?? 'API error'
-          const e = Object.assign(new Error(msg), { status: res.status, code })
-          throw e
-        }
-
-        const data = await res.json()
-        const text = data.choices?.[0]?.message?.content ?? ''
-
-        // Extract JSON
-        const jsonMatch = text.match(/\{[\s\S]*\}/)
-        if (!jsonMatch) throw new Error('No JSON in response')
-
-        const result = JSON.parse(jsonMatch[0]) as AIAnalysisResult
-
-        // Enforce minimum
-        if (result.estimated_labor_min < MINIMUM_LABOR_FEE)
-          result.estimated_labor_min = MINIMUM_LABOR_FEE
-        if (result.estimated_labor_max < result.estimated_labor_min)
-          result.estimated_labor_max = result.estimated_labor_min
-
-        return result
-      } catch (err: any) {
-        lastError = err
-        const status = err.status ?? 0
-        // 429 = rate limit or 503 = busy → retry
-        if (status === 429 || status === 503) {
-          if (attempt < 2) await new Promise(r => setTimeout(r, 2000))
-          continue
-        }
-        // 400/404 on this model → try next
-        if (status === 400 || status === 404) break
-        // Other errors → throw immediately
-        throw err
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        const msg = (err as any)?.errors?.[0]?.message ?? `HTTP ${res.status}`
+        throw Object.assign(new Error(msg), { status: res.status })
       }
+
+      const data = await res.json()
+      const text = (data as any)?.result?.response ?? ''
+
+      const jsonMatch = text.match(/\{[\s\S]*\}/)
+      if (!jsonMatch) throw new Error('No JSON in response: ' + text.slice(0, 100))
+
+      const result = JSON.parse(jsonMatch[0]) as AIAnalysisResult
+
+      if (result.estimated_labor_min < MINIMUM_LABOR_FEE)
+        result.estimated_labor_min = MINIMUM_LABOR_FEE
+      if (result.estimated_labor_max < result.estimated_labor_min)
+        result.estimated_labor_max = result.estimated_labor_min
+
+      return result
+    } catch (err: any) {
+      lastError = err
+      if (attempt < 3) await new Promise(r => setTimeout(r, 1500))
     }
   }
 
   throw lastError
 }
 
-/** Generate a unique order ID */
 export function generateOrderId(): string {
   const now = new Date()
   const date = now.toISOString().slice(0, 10).replace(/-/g, '')
