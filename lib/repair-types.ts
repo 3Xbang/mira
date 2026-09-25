@@ -123,5 +123,6 @@ export const URGENCY_LABELS: Record<string, Record<string, string>> = {
   emergency: { en: 'Emergency', zh: '非常紧急', th: 'ฉุกเฉิน' },
 }
 
-export const MINIMUM_LABOR_FEE = 2000 // THB
+export const MINIMUM_LABOR_FEE = 2000 // THB — covers minimum 2 workers
+export const MINIMUM_WORKERS = 2      // Always send at least 2 workers
 export const DEPOSIT_RATE = 0.5       // 50%

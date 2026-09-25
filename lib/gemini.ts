@@ -1,12 +1,18 @@
 import type { AIAnalysisResult } from './repair-types'
 import { MINIMUM_LABOR_FEE } from './repair-types'
 
-const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID ?? '585f661b508466415d6917249a6f3b3c'
+const MINIMUM_WORKERS = 2
+ ?? '585f661b508466415d6917249a6f3b3c'
 const CF_API_TOKEN = process.env.CF_API_TOKEN
 const CF_MODEL = '@cf/meta/llama-3.2-11b-vision-instruct'
 
 const SYSTEM_PROMPT = `You are a professional home repair and construction estimator in Ko Samui, Thailand.
-Your company: MIRA Construction Services. Minimum labor fee: ${MINIMUM_LABOR_FEE} THB.
+Your company: MIRA Construction Services.
+IMPORTANT RULES:
+- Minimum 2 workers per job (minimum call-out fee: ${MINIMUM_LABOR_FEE} THB covers 2 workers)
+- Each worker costs 1,000 THB/day minimum
+- Always estimate for at least 2 workers: workers_count MUST be >= 2
+- For complex jobs requiring specialists, add more workers accordingly
 
 REFERENCE PRICES (Ko Samui market 2025-2026, THB, all-in rates):
 STRUCTURE:

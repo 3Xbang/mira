@@ -453,11 +453,13 @@ export default function RepairPage() {
                       <div className="bg-gray-50 rounded-xl p-4">
                         <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1">{t.workers}</p>
                         <p className="font-semibold text-gray-800">{analysis.workers_needed}</p>
-                        {analysis.workers_count && analysis.workers_count > 1 && (
-                          <p className="text-xs text-gray-500 mt-0.5">
-                            {lang === 'zh' ? `${analysis.workers_count} 人` : lang === 'th' ? `${analysis.workers_count} คน` : `${analysis.workers_count} workers`}
-                          </p>
-                        )}
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {lang === 'zh'
+                            ? `${Math.max(2, analysis.workers_count ?? 2)} 人出行`
+                            : lang === 'th'
+                            ? `${Math.max(2, analysis.workers_count ?? 2)} คน`
+                            : `${Math.max(2, analysis.workers_count ?? 2)} workers`}
+                        </p>
                       </div>
                       <div className="bg-gray-50 rounded-xl p-4">
                         <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1">{t.timeline}</p>
@@ -526,6 +528,13 @@ export default function RepairPage() {
                           {t.thb}{deposit.toLocaleString()}
                         </p>
                         <p className="text-xs text-emerald-500 mt-1">{t.minFee}</p>
+                        <p className="text-xs text-emerald-500 mt-0.5">
+                          {lang === 'zh'
+                            ? '🔧 每次出行最少2名工人'
+                            : lang === 'th'
+                            ? '🔧 ส่งช่างอย่างน้อย 2 คนต่อครั้ง'
+                            : '🔧 Minimum 2 workers per visit'}
+                        </p>
                       </div>
                     </div>
 
