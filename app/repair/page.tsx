@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import type { AIAnalysisResult } from '@/lib/repair-types'
 import { CATEGORY_LABELS, MINIMUM_LABOR_FEE, DEPOSIT_RATE } from '@/lib/repair-types'
 import Link from 'next/link'
@@ -299,6 +299,23 @@ export default function RepairPage() {
   const [lang, setLang] = useState<Lang>('en')
   const t = T[lang]
 
+  // Customer login state
+  const [customer, setCustomer] = useState<any | null>(null)
+  const [authChecked, setAuthChecked] = useState(false)
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
+
+  // Check login status on mount
+  useEffect(() => {
+    fetch('/api/repair/auth/me')
+      .then(r => r.json())
+      .then(d => {
+        if (!d.error) setCustomer(d.customer)
+        else setShowLoginPrompt(true)
+      })
+      .catch(() => setShowLoginPrompt(true))
+      .finally(() => setAuthChecked(true))
+  }, [])
+
   const [images, setImages] = useState<string[]>([])
   const [previews, setPreviews] = useState<string[]>([])
   const [description, setDescription] = useState('')
@@ -310,6 +327,20 @@ export default function RepairPage() {
     name: '', phone: '', address: '',
     date: '', time: 'morning', notes: '', line: '', whatsapp: '',
   })
+
+  // Auto-fill form when customer logs in
+  useEffect(() => {
+    if (customer) {
+      setForm(prev => ({
+        ...prev,
+        name: customer.name ?? prev.name,
+        phone: customer.phone ?? prev.phone,
+        address: customer.address ?? prev.address,
+        line: customer.line ?? prev.line,
+        whatsapp: customer.whatsapp ?? prev.whatsapp,
+      }))
+    }
+  }, [customer])
   const [submitting, setSubmitting] = useState(false)
   const [orderId, setOrderId] = useState<string | null>(null)
   const [deposit, setDeposit] = useState(0)
@@ -439,6 +470,77 @@ export default function RepairPage() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-5">
+
+        {/* ── Login Prompt Modal ── */}
+        {authChecked && showLoginPrompt && (
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
+            <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
+              {/* Top banner */}
+              <div className="bg-gradient-to-br from-slate-900 to-sky-900 px-6 py-6 text-white">
+                <div className="text-4xl mb-2">👋</div>
+                <h2 className="text-xl font-bold">
+                  {lang === 'zh' ? '欢迎使用报修服务' : lang === 'th' ? 'ยินดีต้อนรับ' : 'Welcome!'}
+                </h2>
+                <p className="text-white/70 text-sm mt-1">
+                  {lang === 'zh' ? '登录后可以自动填写信息，查看历史订单' :
+                   lang === 'th' ? 'เข้าสู่ระบบเพื่อกรอกข้อมูลอัตโนมัติและดูประวัติ' :
+                   'Sign in to auto-fill your details and view order history'}
+                </p>
+              </div>
+
+              {/* Benefits */}
+              <div className="px-6 py-4 space-y-2 border-b border-gray-100">
+                {[
+                  { icon: '⚡', en: 'Auto-fill your name, phone & address', zh: '自动填写姓名、电话和地址', th: 'กรอกข้อมูลอัตโนมัติ' },
+                  { icon: '📋', en: 'View all your order history', zh: '查看所有历史订单', th: 'ดูประวัติคำสั่งทั้งหมด' },
+                  { icon: '📧', en: 'Get order updates by email', zh: '邮件接收订单状态更新', th: 'รับการอัปเดตทางอีเมล' },
+                ].map((b, i) => (
+                  <div key={i} className="flex items-center gap-3 text-sm text-gray-700">
+                    <span className="text-lg">{b.icon}</span>
+                    <span>{b[lang]}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Buttons */}
+              <div className="px-6 py-5 space-y-3">
+                <a href={`/repair/login?redirect=/repair`}
+                  className="block w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3.5 rounded-2xl text-center transition-colors text-sm">
+                  {lang === 'zh' ? '📧 邮箱登录 / 注册' :
+                   lang === 'th' ? '📧 เข้าสู่ระบบ / สมัครสมาชิก' :
+                   '📧 Sign In / Register with Email'}
+                </a>
+                <button
+                  onClick={() => setShowLoginPrompt(false)}
+                  className="block w-full text-gray-400 text-sm py-2 hover:text-gray-600 transition-colors text-center">
+                  {lang === 'zh' ? '跳过，直接下单 →' :
+                   lang === 'th' ? 'ข้ามและสั่งซื้อโดยตรง →' :
+                   'Continue without signing in →'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Customer greeting (logged in) ── */}
+        {authChecked && customer && (
+          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">👤</span>
+              <div>
+                <p className="text-sm font-semibold text-emerald-800">
+                  {customer.name ?? customer.email}
+                </p>
+                <p className="text-xs text-emerald-600">{customer.email}</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <a href="/repair/orders" className="text-xs text-emerald-600 hover:underline">
+                {lang === 'zh' ? '我的订单' : lang === 'th' ? 'คำสั่งของฉัน' : 'My Orders'}
+              </a>
+            </div>
+          </div>
+        )}
 
         {/* ── STEP 1: Upload + Describe ── */}
         {step === 1 && (
