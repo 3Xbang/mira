@@ -70,6 +70,7 @@ export interface RepairOrder {
   preferred_date: string           // 预约日期
   preferred_time: string           // 上午/下午/全天
   notes?: string                   // 客户备注
+  description?: string             // 客户问题描述（引导式问题答案）
   language: 'en' | 'zh' | 'th'    // 客户使用的语言
 
   // Images
