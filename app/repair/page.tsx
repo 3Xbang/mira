@@ -10,8 +10,8 @@ import RepairDescriptionForm from '@/components/repair/RepairDescriptionForm'
 
 const COMPANY = {
   nameZh: '泰国家园',
-  nameEn: 'Thailand Home',
-  nameTh: 'ไทยโฮม',
+  nameEn: 'Homeland Corporation Co.,Ltd',
+  nameTh: 'โฮมแลนด์ คอร์ปอเรชั่น',
   wa1: '66835234777',
   line: '0835234777',
   area: { en: 'Ko Samui Island', zh: '苏梅岛全岛', th: 'เกาะสมุย ทั้งเกาะ' },
