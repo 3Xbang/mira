@@ -30,8 +30,8 @@ const T = {
     step1: 'Upload Photos',
     step2: 'AI Analysis',
     step3: 'Confirmed',
-    uploadLabel: 'Upload photos of the issue (max 5, multiple angles recommended)',
-    uploadHint: 'JPG · PNG · WebP · Max 5 photos',
+    uploadLabel: 'Upload photos of the issue (max 10, multiple angles recommended)',
+    uploadHint: 'JPG · PNG · WebP · Max 10 photos',
     analyze: 'Analyze with AI',
     analyzing: 'Analyzing... (may take 15-20 seconds)',
     analysisTitle: 'AI Assessment',
@@ -136,8 +136,8 @@ const T = {
     step1: 'อัปโหลดรูป',
     step2: 'AI วิเคราะห์',
     step3: 'จองสำเร็จ',
-    uploadLabel: 'อัปโหลดรูปปัญหา (สูงสุด 5 รูป หลายมุมยิ่งดี)',
-    uploadHint: 'JPG · PNG · WebP · สูงสุด 5 รูป',
+    uploadLabel: 'อัปโหลดรูปปัญหา (สูงสุด 10 รูป หลายมุมยิ่งดี)',
+    uploadHint: 'JPG · PNG · WebP · สูงสุด 10 รูป',
     analyze: 'วิเคราะห์ด้วย AI',
     analyzing: 'กำลังวิเคราะห์... (ประมาณ 15-20 วินาที)',
     analysisTitle: 'ผลการวิเคราะห์ AI',
@@ -347,7 +347,7 @@ export default function RepairPage() {
   const fileRef = useRef<HTMLInputElement>(null)
 
   async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? []).slice(0, 5)
+    const files = Array.from(e.target.files ?? []).slice(0, 10)
     if (!files.length) return
     setUploading(true)
     const newUrls: string[] = []
@@ -359,8 +359,8 @@ export default function RepairPage() {
       const res = await fetch('/admin/api/upload', { method: 'POST', body: fd })
       if (res.ok) { const d = await res.json(); newUrls.push(d.url) }
     }
-    setImages(p => [...p, ...newUrls].slice(0, 5))
-    setPreviews(p => [...p, ...newPreviews].slice(0, 5))
+    setImages(p => [...p, ...newUrls].slice(0, 10))
+    setPreviews(p => [...p, ...newPreviews].slice(0, 10))
     setUploading(false)
     if (fileRef.current) fileRef.current.value = ''
   }
