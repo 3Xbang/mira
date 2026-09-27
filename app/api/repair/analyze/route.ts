@@ -3,11 +3,20 @@ import { analyzeRepairImages } from '@/lib/gemini'
 
 export async function POST(req: NextRequest) {
   try {
-    const { images, description, language } = await req.json()
+    const { images, description, language, category, guidedAnswers } = await req.json()
+
     if (!images?.length) {
       return NextResponse.json({ error: 'No images provided' }, { status: 400 })
     }
-    const result = await analyzeRepairImages(images, description ?? '', language ?? 'en')
+
+    const result = await analyzeRepairImages(
+      images,
+      description ?? '',
+      language ?? 'en',
+      category ?? 'general',
+      guidedAnswers ?? ''
+    )
+
     return NextResponse.json(result)
   } catch (e: any) {
     console.error('Analyze error:', e)

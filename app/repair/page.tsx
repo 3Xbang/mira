@@ -319,6 +319,8 @@ export default function RepairPage() {
   const [images, setImages] = useState<string[]>([])
   const [previews, setPreviews] = useState<string[]>([])
   const [description, setDescription] = useState('')
+  const [category, setCategory] = useState('general')
+  const [guidedAnswers, setGuidedAnswers] = useState('')
   const [uploading, setUploading] = useState(false)
   const [analyzing, setAnalyzing] = useState(false)
   const [analysis, setAnalysis] = useState<AIAnalysisResult | null>(null)
@@ -379,7 +381,7 @@ export default function RepairPage() {
           const res = await fetch('/api/repair/analyze', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ images, description, language: lang }),
+            body: JSON.stringify({ images, description, language: lang, category, guidedAnswers }),
           })
           const data = await res.json()
           if (!res.ok) throw new Error(data.error)
@@ -595,7 +597,11 @@ export default function RepairPage() {
               <h2 className="font-bold text-gray-900 mb-4">
                 {lang === 'zh' ? '🔍 描述问题' : lang === 'th' ? '🔍 อธิบายปัญหา' : '🔍 Describe the Problem'}
               </h2>
-              <RepairDescriptionForm lang={lang} onChange={(desc) => setDescription(desc)} />
+              <RepairDescriptionForm lang={lang} onChange={(desc, cat, answers) => {
+                setDescription(desc)
+                setCategory(cat || 'general')
+                setGuidedAnswers(answers || '')
+              }} />
             </div>
 
             {/* Analyze button */}

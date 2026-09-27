@@ -295,7 +295,7 @@ const LABELS = {
 
 interface Props {
   lang: Lang
-  onChange: (summary: string, category: string) => void
+  onChange: (summary: string, category: string, guidedAnswers: string) => void
 }
 
 export default function RepairDescriptionForm({ lang, onChange }: Props) {
@@ -314,7 +314,7 @@ export default function RepairDescriptionForm({ lang, onChange }: Props) {
     // Notify parent immediately with just the category
     const type = SERVICE_TYPES.find(s => s.id === typeId)
     if (type) {
-      onChange(type[lang], typeId)
+      onChange(type[lang], typeId, '')
     }
   }
 
@@ -362,7 +362,9 @@ export default function RepairDescriptionForm({ lang, onChange }: Props) {
 
     if (note) parts.push(`Additional info: ${note}`)
 
-    onChange(parts.join('. '), category)
+    const summary = parts.join('. ')
+    const guidedAnswers = parts.slice(1).join('. ') // without type name
+    onChange(summary, category, guidedAnswers)
   }
 
   const l = (obj: Record<Lang, string>) => obj[lang]
