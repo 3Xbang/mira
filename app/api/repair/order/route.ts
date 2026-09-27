@@ -49,6 +49,7 @@ export async function POST(req: NextRequest) {
       notes: notes || undefined,
       language: language ?? 'en',
       images: images ?? [],
+      description: description || undefined,
       ai_analysis: ai_analysis ?? undefined,
       labor_fee: labor,
       material_fee: material,

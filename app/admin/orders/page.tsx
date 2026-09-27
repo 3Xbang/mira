@@ -140,7 +140,7 @@ export default async function OrdersPage() {
                       <p className="text-xs text-gray-400 mt-1">{order.images?.length ?? 0} 张照片 · 点击查看大图</p>
                     </div>
 
-                    {/* 2. Customer info + AI diagnosis */}
+                    {/* 2. Customer info + problem + AI diagnosis */}
                     <div className="md:col-span-2 space-y-3">
                       {/* Customer */}
                       <div>
@@ -167,6 +167,14 @@ export default async function OrdersPage() {
                         <p className="text-xs text-gray-500">📅 {order.preferred_date} · {order.preferred_time}</p>
                       </div>
 
+                      {/* Customer problem description */}
+                      {(order as any).description && (
+                        <div className="bg-sky-50 border border-sky-100 rounded-xl p-3">
+                          <p className="text-xs font-semibold text-sky-600 mb-1">💬 客户描述的问题</p>
+                          <p className="text-sm text-sky-900">{(order as any).description}</p>
+                        </div>
+                      )}
+
                       {/* AI diagnosis for team */}
                       {order.ai_analysis && (
                         <div className="bg-slate-800 rounded-xl p-3">
@@ -184,7 +192,18 @@ export default async function OrdersPage() {
                               <span className="text-slate-300">{order.ai_analysis.worker_types?.join(', ')} × {Math.max(2, order.ai_analysis.workers_count ?? 2)}</span>
                             </div>
                           </div>
+                          {order.ai_analysis.internal_diagnosis && (
+                            <p className="text-xs text-slate-400 mt-1.5 line-clamp-2">{order.ai_analysis.internal_diagnosis}</p>
+                          )}
                           <p className="text-xs text-slate-400 mt-1">⏱ {order.ai_analysis.estimated_days}</p>
+                        </div>
+                      )}
+
+                      {/* Customer notes */}
+                      {order.notes && (
+                        <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
+                          <p className="text-xs font-semibold text-amber-600 mb-1">📝 客户备注</p>
+                          <p className="text-xs text-amber-900">{order.notes}</p>
                         </div>
                       )}
                     </div>
