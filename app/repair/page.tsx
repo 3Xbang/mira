@@ -5,6 +5,7 @@ import type { AIAnalysisResult } from '@/lib/repair-types'
 import { CATEGORY_LABELS, MINIMUM_LABOR_FEE, DEPOSIT_RATE } from '@/lib/repair-types'
 import Link from 'next/link'
 import RepairDescriptionForm from '@/components/repair/RepairDescriptionForm'
+import LoginModal from '@/components/repair/LoginModal'
 
 // ─── Company Info ─────────────────────────────────────────────────────────────
 
@@ -473,55 +474,16 @@ export default function RepairPage() {
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-5">
 
-        {/* ── Login Prompt Modal ── */}
+        {/* ── Login Modal (inline, no redirect) ── */}
         {authChecked && showLoginPrompt && (
-          <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
-            <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
-              {/* Top banner */}
-              <div className="bg-gradient-to-br from-slate-900 to-sky-900 px-6 py-6 text-white">
-                <div className="text-4xl mb-2">👋</div>
-                <h2 className="text-xl font-bold">
-                  {lang === 'zh' ? '欢迎使用报修服务' : lang === 'th' ? 'ยินดีต้อนรับ' : 'Welcome!'}
-                </h2>
-                <p className="text-white/70 text-sm mt-1">
-                  {lang === 'zh' ? '登录后可以自动填写信息，查看历史订单' :
-                   lang === 'th' ? 'เข้าสู่ระบบเพื่อกรอกข้อมูลอัตโนมัติและดูประวัติ' :
-                   'Sign in to auto-fill your details and view order history'}
-                </p>
-              </div>
-
-              {/* Benefits */}
-              <div className="px-6 py-4 space-y-2 border-b border-gray-100">
-                {[
-                  { icon: '⚡', en: 'Auto-fill your name, phone & address', zh: '自动填写姓名、电话和地址', th: 'กรอกข้อมูลอัตโนมัติ' },
-                  { icon: '📋', en: 'View all your order history', zh: '查看所有历史订单', th: 'ดูประวัติคำสั่งทั้งหมด' },
-                  { icon: '📧', en: 'Get order updates by email', zh: '邮件接收订单状态更新', th: 'รับการอัปเดตทางอีเมล' },
-                ].map((b, i) => (
-                  <div key={i} className="flex items-center gap-3 text-sm text-gray-700">
-                    <span className="text-lg">{b.icon}</span>
-                    <span>{b[lang]}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Buttons */}
-              <div className="px-6 py-5 space-y-3">
-                <a href={`/repair/login?redirect=/repair`}
-                  className="block w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3.5 rounded-2xl text-center transition-colors text-sm">
-                  {lang === 'zh' ? '📧 邮箱登录 / 注册' :
-                   lang === 'th' ? '📧 เข้าสู่ระบบ / สมัครสมาชิก' :
-                   '📧 Sign In / Register with Email'}
-                </a>
-                <button
-                  onClick={() => setShowLoginPrompt(false)}
-                  className="block w-full text-gray-400 text-sm py-2 hover:text-gray-600 transition-colors text-center">
-                  {lang === 'zh' ? '跳过，直接下单 →' :
-                   lang === 'th' ? 'ข้ามและสั่งซื้อโดยตรง →' :
-                   'Continue without signing in →'}
-                </button>
-              </div>
-            </div>
-          </div>
+          <LoginModal
+            lang={lang}
+            onSuccess={(c) => {
+              setCustomer(c)
+              setShowLoginPrompt(false)
+            }}
+            onSkip={() => setShowLoginPrompt(false)}
+          />
         )}
 
         {/* ── Customer greeting (logged in) ── */}
