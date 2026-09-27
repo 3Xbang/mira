@@ -3,6 +3,7 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb'
 import { generateOrderId } from '@/lib/gemini'
 import { MINIMUM_LABOR_FEE, DEPOSIT_RATE } from '@/lib/repair-types'
+import { upsertCustomer } from '@/lib/db'
 import type { RepairOrder } from '@/lib/repair-types'
 
 function getDoc() {
@@ -63,6 +64,33 @@ export async function POST(req: NextRequest) {
       TableName: process.env.MIRA_TABLE_ORDERS ?? 'mira-repair-orders',
       Item: order,
     }))
+
+    // Update customer profile if email provided
+    const customerEmail = body.email || req.cookies.get('homeland_customer')?.value?.split(':')[0]
+    if (customerEmail && customerEmail.includes('@')) {
+      try {
+        await upsertCustomer({
+          id: customerEmail.toLowerCase(),
+          email: customerEmail.toLowerCase(),
+          name: name || undefined,
+          phone: phone || undefined,
+          whatsapp: whatsapp || undefined,
+          line: line || undefined,
+          address: address || undefined,
+          language: language || undefined,
+          order_count: 0, // will be incremented below
+          total_spent: 0,
+        })
+      } catch { /* non-critical */ }
+    }
+
+    // Also save customer_email on the order for lookup
+    if (customerEmail) {
+      await doc.send(new PutCommand({
+        TableName: process.env.MIRA_TABLE_ORDERS ?? 'mira-repair-orders',
+        Item: { ...order, customer_email: customerEmail.toLowerCase() },
+      }))
+    }
 
     return NextResponse.json({ ok: true, order_id: order.id, deposit_fee: deposit })
   } catch (e: any) {

@@ -250,3 +250,102 @@ export async function getProjectSummary(
     floor_plan_count: plans.length,
   }
 }
+
+// ─── Customer ─────────────────────────────────────────────────────────────────
+
+const T_CUSTOMERS = process.env.MIRA_TABLE_CUSTOMERS ?? 'mira-customers'
+const T_OTP       = process.env.MIRA_TABLE_OTP       ?? 'mira-otp'
+
+export interface Customer {
+  id: string          // email (primary key)
+  email: string
+  name?: string
+  phone?: string
+  whatsapp?: string
+  line?: string
+  address?: string    // last used address
+  language?: string
+  order_count: number
+  total_spent: number
+  notes?: string      // admin notes
+  created_at: string
+  updated_at: string
+  last_order_at?: string
+}
+
+export interface OTPRecord {
+  email: string       // partition key
+  code: string
+  expires_at: number  // epoch ms
+  created_at: string
+}
+
+// ─── Customer CRUD ────────────────────────────────────────────────────────────
+
+export async function getCustomerByEmail(email: string): Promise<Customer | undefined> {
+  const doc = getDoc()
+  const res = await doc.send(new GetCommand({ TableName: T_CUSTOMERS, Key: { id: email } }))
+  return res.Item as Customer | undefined
+}
+
+export async function upsertCustomer(data: Partial<Customer> & { id: string }): Promise<void> {
+  const doc = getDoc()
+  const ts = now()
+  const existing = await getCustomerByEmail(data.id).catch(() => undefined)
+  await doc.send(new PutCommand({
+    TableName: T_CUSTOMERS,
+    Item: {
+      order_count: 0,
+      total_spent: 0,
+      created_at: ts,
+      ...existing,
+      ...data,
+      updated_at: ts,
+    },
+  }))
+}
+
+export async function getAllCustomers(): Promise<Customer[]> {
+  const doc = getDoc()
+  const res = await doc.send(new ScanCommand({ TableName: T_CUSTOMERS }))
+  const items = (res.Items ?? []) as Customer[]
+  return items.sort((a, b) => (b.last_order_at ?? b.created_at)?.localeCompare(a.last_order_at ?? a.created_at) ?? 0)
+}
+
+export async function getOrdersByCustomer(email: string) {
+  const doc = getDoc()
+  const res = await doc.send(new ScanCommand({
+    TableName: process.env.MIRA_TABLE_ORDERS ?? 'mira-repair-orders',
+    FilterExpression: 'customer_email = :e',
+    ExpressionAttributeValues: { ':e': email },
+  }))
+  const items = res.Items ?? []
+  return items.sort((a: any, b: any) => b.created_at?.localeCompare(a.created_at) ?? 0)
+}
+
+// ─── OTP ──────────────────────────────────────────────────────────────────────
+
+export async function saveOTP(email: string, code: string): Promise<void> {
+  const doc = getDoc()
+  await doc.send(new PutCommand({
+    TableName: T_OTP,
+    Item: {
+      email,
+      code,
+      expires_at: Date.now() + 10 * 60 * 1000, // 10 minutes
+      created_at: now(),
+    },
+  }))
+}
+
+export async function verifyOTP(email: string, code: string): Promise<boolean> {
+  const doc = getDoc()
+  const res = await doc.send(new GetCommand({ TableName: T_OTP, Key: { email } }))
+  const record = res.Item as OTPRecord | undefined
+  if (!record) return false
+  if (record.code !== code) return false
+  if (Date.now() > record.expires_at) return false
+  // Delete after use
+  await doc.send(new DeleteCommand({ TableName: T_OTP, Key: { email } }))
+  return true
+}
