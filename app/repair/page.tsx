@@ -13,7 +13,6 @@ const COMPANY = {
   nameEn: 'Thailand Home',
   nameTh: 'ไทยโฮม',
   wa1: '66835234777',
-  wa2: '66640566668',
   line: '0835234777',
   area: { en: 'Ko Samui Island', zh: '苏梅岛全岛', th: 'เกาะสมุย ทั้งเกาะ' },
   hours: { en: '8:00 AM – 12:00 AM · 7 days', zh: '每天 8:00 – 24:00，7天服务', th: '8:00 – 24:00 ทุกวัน' },
@@ -282,11 +281,7 @@ function ContactButtons({ lang }: { lang: Lang }) {
       <div className="flex gap-2 justify-center flex-wrap">
         <a href={`https://wa.me/${COMPANY.wa1}`} target="_blank" rel="noreferrer"
           className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded-full text-sm transition-colors">
-          📱 WhatsApp 1
-        </a>
-        <a href={`https://wa.me/${COMPANY.wa2}`} target="_blank" rel="noreferrer"
-          className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded-full text-sm transition-colors">
-          📱 WhatsApp 2
+          📱 WhatsApp
         </a>
         <a href={`https://line.me/ti/p/${COMPANY.line}`} target="_blank" rel="noreferrer"
           className="flex items-center gap-2 bg-lime-500 hover:bg-lime-600 text-white font-semibold px-4 py-2 rounded-full text-sm transition-colors">
