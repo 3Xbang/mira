@@ -120,9 +120,9 @@ export default async function LocationPage({
   const name = tl(project.name, locale)
   const lang = locale as Lang
 
-  // Use project coordinates or default to Plai Laem area
-  const lat = project.location_lat ?? 9.5716
-  const lng = project.location_lng ?? 100.0666
+  // Use project coordinates or default to exact project location
+  const lat = project.location_lat ?? 9.5655
+  const lng = project.location_lng ?? 100.0689
   const mapSrc = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`
 
   const LABELS = {
