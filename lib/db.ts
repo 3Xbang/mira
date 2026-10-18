@@ -219,17 +219,15 @@ export async function getProjectSummary(
     // Units
     total_units += p.available_units ?? 0
 
-    // Delivery dates (sort lexicographically â€” "2026-Q4" < "2027-Q2" works fine)
+    // Delivery dates (sort lexicographically â€?"2026-Q4" < "2027-Q2" works fine)
     if (p.delivery_date) {
       if (!delivery_earliest || p.delivery_date < delivery_earliest) delivery_earliest = p.delivery_date
       if (!delivery_latest || p.delivery_date > delivery_latest) delivery_latest = p.delivery_date
     }
 
-    // Images: collect floor plan images + preview images per plan
-    for (const img of p.floor_plan_images ?? []) if (img) planImages.push(img)
+    // Only use preview/render images (NOT floor plan technical drawings) for gallery
     for (const img of p.preview_images ?? []) if (img) planImages.push(img)
-    // legacy single-image fields
-    if ((p as any).floor_plan_image) planImages.push((p as any).floor_plan_image)
+    // legacy single preview image field only
     if ((p as any).preview_image) planImages.push((p as any).preview_image)
   }
 
@@ -349,3 +347,4 @@ export async function verifyOTP(email: string, code: string): Promise<boolean> {
   await doc.send(new DeleteCommand({ TableName: T_OTP, Key: { email } }))
   return true
 }
+
