@@ -219,7 +219,7 @@ export async function getProjectSummary(
     // Units
     total_units += p.available_units ?? 0
 
-    // Delivery dates (sort lexicographically â€?"2026-Q4" < "2027-Q2" works fine)
+    // Delivery dates (sort lexicographically ""2026-Q4" < "2027-Q2" works fine)
     if (p.delivery_date) {
       if (!delivery_earliest || p.delivery_date < delivery_earliest) delivery_earliest = p.delivery_date
       if (!delivery_latest || p.delivery_date > delivery_latest) delivery_latest = p.delivery_date
