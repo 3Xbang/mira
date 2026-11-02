@@ -69,10 +69,10 @@ export async function getHeroBanners(): Promise<string[]> {
 }
 
 export async function getSiteSettings(): Promise<{ whatsapp: string; lineId: string }> {
-  const data = await fetchFromAPI('/settings')
+  // Return hardcoded values directly — the external API is unreliable and causes ~10s delays
   return {
-    whatsapp: data?.miraa_whatsapp ?? '66812345678',
-    lineId: data?.miraa_line_id ?? 'mira_samui',
+    whatsapp: '66640566668',
+    lineId:   'mira_samui',
   }
 }
 
