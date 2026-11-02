@@ -47,6 +47,10 @@ export default function ContactButton({ whatsappNumber, lineId }: ContactButtonP
   const [open, setOpen] = useState(false)
   const t = useTranslations('contact')
 
+  // Two WhatsApp numbers
+  const wa1 = '66640566668'
+  const wa2 = '66835234777'
+
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
       {/* Expandable contact buttons */}
@@ -70,15 +74,29 @@ export default function ContactButton({ whatsappNumber, lineId }: ContactButtonP
           <LineIcon />
         </a>
 
-        {/* WhatsApp button */}
+        {/* WhatsApp 2 button */}
         <a
-          href={`https://wa.me/${whatsappNumber}`}
+          href={`https://wa.me/${wa2}`}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={t('whatsapp')}
+          aria-label="WhatsApp +66 83 523 4777"
           onClick={() => trackContactClick('whatsapp')}
           className="flex items-center justify-center min-w-[44px] min-h-[44px] w-11 h-11 rounded-full text-white shadow-lg hover:scale-110 transition-transform duration-200"
           style={{ backgroundColor: '#25D366' }}
+          tabIndex={open ? 0 : -1}
+        >
+          <WhatsAppIcon />
+        </a>
+
+        {/* WhatsApp 1 button */}
+        <a
+          href={`https://wa.me/${wa1}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="WhatsApp +66 64 056 6668"
+          onClick={() => trackContactClick('whatsapp')}
+          className="flex items-center justify-center min-w-[44px] min-h-[44px] w-11 h-11 rounded-full text-white shadow-lg hover:scale-110 transition-transform duration-200"
+          style={{ backgroundColor: '#128C7E' }}
           tabIndex={open ? 0 : -1}
         >
           <WhatsAppIcon />

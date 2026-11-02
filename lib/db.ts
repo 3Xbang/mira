@@ -348,3 +348,27 @@ export async function verifyOTP(email: string, code: string): Promise<boolean> {
   return true
 }
 
+
+// ─── Order Statistics ─────────────────────────────────────────────────────────
+
+export async function getOrderStats() {
+  const doc = getDoc()
+  const res = await doc.send(new ScanCommand({
+    TableName: process.env.MIRA_TABLE_ORDERS ?? 'mira-repair-orders',
+  }))
+  const orders = (res.Items ?? []) as any[]
+  const now = new Date()
+  const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  return {
+    total:      orders.length,
+    pending:    orders.filter(o => o.status === 'pending').length,
+    confirmed:  orders.filter(o => o.status === 'confirmed').length,
+    in_progress:orders.filter(o => o.status === 'in_progress').length,
+    completed:  orders.filter(o => o.status === 'completed').length,
+    this_month: orders.filter(o => (o.created_at ?? '').startsWith(thisMonth)).length,
+    revenue_total: orders.reduce((s, o) => s + (Number(o.total_fee) || 0), 0),
+    revenue_month: orders
+      .filter(o => (o.created_at ?? '').startsWith(thisMonth))
+      .reduce((s, o) => s + (Number(o.total_fee) || 0), 0),
+  }
+}

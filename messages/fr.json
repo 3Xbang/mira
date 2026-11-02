@@ -27,9 +27,15 @@
     "title": "Contactez-nous"
   },
   "footer": {
-    "copyright": "© 2024 Mira Real Estate. Tous droits réservés.",
+    "copyright": "© 2025 Mira Real Estate. Tous droits réservés.",
     "tagline": "Votre partenaire de confiance pour l'immobilier de luxe à Koh Samui.",
-    "address": "Koh Samui, Surat Thani, Thailand"
+    "address": "Koh Samui, Surat Thani, Thaïlande",
+    "contactTitle": "Nous contacter",
+    "phone": "+66 64 056 6668",
+    "email": "info@miraa.homes",
+    "linksTitle": "Liens rapides",
+    "linkHome": "Accueil",
+    "linkRepair": "Services de réparation"
   },
   "project": {
     "overview": "Présentation",
