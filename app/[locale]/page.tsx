@@ -6,7 +6,6 @@ import ProjectCard from '@/components/home/ProjectCard'
 import HeroSection from '@/components/home/HeroSection'
 
 export const dynamic = 'force-dynamic'
-export const revalidate = 60 // cache homepage for 60 seconds
 
 // Base count — displayed customer number starts from here
 const STATS_BASE = 861
