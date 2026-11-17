@@ -14,16 +14,40 @@ body {
 }
 /* Custom animations for enhanced UI interactions */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn { animation: fadeIn 0.2s ease-out; }
+
+/* ── Hero Ken Burns zoom animation ─────────────────────────── */
+@keyframes kenburns {
+  0%   { transform: scale(1)    translate(0,    0);    }
+  100% { transform: scale(1.12) translate(-1.5%, -1%); }
+}
+.kenburns {
+  animation: kenburns 9s ease-out forwards;
 }
 
-.animate-fadeIn {
-  animation: fadeIn 0.2s ease-out;
+/* ── Hero text fade-in-up ────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-fade-in {
+  opacity: 0;
+  animation: fadeInUp 0.9s ease-out forwards;
+}
+
+/* ── Scroll indicator ────────────────────────────────────────── */
+@keyframes scrollDown {
+  0%   { transform: scaleY(0); transform-origin: top;    opacity: 1; }
+  50%  { transform: scaleY(1); transform-origin: top;    opacity: 1; }
+  51%  { transform: scaleY(1); transform-origin: bottom; opacity: 1; }
+  100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
+}
+.scroll-line {
+  width: 1px;
+  height: 36px;
+  background: rgba(255,255,255,0.4);
+  animation: scrollDown 2.4s ease-in-out infinite;
 }
