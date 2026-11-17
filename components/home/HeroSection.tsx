@@ -5,18 +5,26 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 
-// Koh Samui beach & palm tree hero images
+// 100% confirmed Koh Samui photos — Wikimedia Commons (CC license)
+// Sources: Lamai Beach, Chaweng Beach, Choeng Mon Beach, Lipa Noi, Coral Cove
 const BEACH_IMAGES = [
-  'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=85',
-  'https://images.unsplash.com/photo-1483683804023-6ccdb62f86ef?auto=format&fit=crop&w=1920&q=85',
-  'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?auto=format&fit=crop&w=1920&q=85',
-  'https://images.unsplash.com/photo-1573843981267-be1999ff37cd?auto=format&fit=crop&w=1920&q=85',
-  'https://images.unsplash.com/photo-1559494007-9f5847c49d94?auto=format&fit=crop&w=1920&q=85',
+  // Lipa Noi Beach, Ko Samui — sunset with coconut palms
+  'https://upload.wikimedia.org/wikipedia/commons/8/80/Koh_Samui_Lipa_Noi2.jpg',
+  // Lamai Beach, Koh Samui
+  'https://upload.wikimedia.org/wikipedia/commons/f/fb/Lamai_Beach%2C_Koh_Samui_%2848107374183%29.jpg',
+  // Choeng Mon Beach, Koh Samui
+  'https://upload.wikimedia.org/wikipedia/commons/b/bb/Choeng_Mon_Beach%2C_Koh_Samui_%2828034183446%29.jpg',
+  // Chaweng Beach, Koh Samui
+  'https://upload.wikimedia.org/wikipedia/commons/b/b2/Chaweng-beach_koh_Samui.jpg',
+  // Chaweng Noi Beach, Koh Samui
+  'https://upload.wikimedia.org/wikipedia/commons/5/5e/Chaweng_Noi_Beach%2C_Koh_Samui_%2848107363622%29.jpg',
+  // Koh Samui, Island, Beach, Thailand
+  'https://upload.wikimedia.org/wikipedia/commons/7/71/Koh_Samui%2C_Island%2C_Beach%2C_Thailand.jpg',
 ]
 
 export default function HeroSection({ heroImages }: { heroImages?: string[] }) {
   const t = useTranslations('hero')
-  const images = BEACH_IMAGES // always use beach images for hero
+  const images = (heroImages && heroImages.length > 0) ? heroImages : BEACH_IMAGES
   const [current, setCurrent] = useState(0)
   const [animKey, setAnimKey] = useState(0)
 
