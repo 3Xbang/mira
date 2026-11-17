@@ -5,26 +5,19 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 
-// 100% confirmed Koh Samui photos — Wikimedia Commons (CC license)
-// Sources: Lamai Beach, Chaweng Beach, Choeng Mon Beach, Lipa Noi, Coral Cove
-const BEACH_IMAGES = [
-  // Lipa Noi Beach, Ko Samui — sunset with coconut palms
-  'https://upload.wikimedia.org/wikipedia/commons/8/80/Koh_Samui_Lipa_Noi2.jpg',
-  // Lamai Beach, Koh Samui
-  'https://upload.wikimedia.org/wikipedia/commons/f/fb/Lamai_Beach%2C_Koh_Samui_%2848107374183%29.jpg',
-  // Choeng Mon Beach, Koh Samui
-  'https://upload.wikimedia.org/wikipedia/commons/b/bb/Choeng_Mon_Beach%2C_Koh_Samui_%2828034183446%29.jpg',
-  // Chaweng Beach, Koh Samui
-  'https://upload.wikimedia.org/wikipedia/commons/b/b2/Chaweng-beach_koh_Samui.jpg',
-  // Chaweng Noi Beach, Koh Samui
-  'https://upload.wikimedia.org/wikipedia/commons/5/5e/Chaweng_Noi_Beach%2C_Koh_Samui_%2848107363622%29.jpg',
-  // Koh Samui, Island, Beach, Thailand
-  'https://upload.wikimedia.org/wikipedia/commons/7/71/Koh_Samui%2C_Island%2C_Beach%2C_Thailand.jpg',
+// Fallback: original Cloudinary renders (used only when no project gallery images)
+const FALLBACK_IMAGES = [
+  'https://res.cloudinary.com/ddb3tk1ep/image/upload/v1774596228/mira_homes_A_erq6cj.png',
+  'https://res.cloudinary.com/ddb3tk1ep/image/upload/v1774596227/mira_homes_3_zrnq2v.png',
+  'https://res.cloudinary.com/ddb3tk1ep/image/upload/v1774596227/mira_homes2_t8csmh.png',
+  'https://res.cloudinary.com/ddb3tk1ep/image/upload/v1774596228/mira_homes._1_qqk5ip.png',
+  'https://res.cloudinary.com/ddb3tk1ep/image/upload/v1774596225/mira_homeC_qqqme3.png',
+  'https://res.cloudinary.com/ddb3tk1ep/image/upload/v1774596198/mira_homes_4_vogftx.png',
 ]
 
 export default function HeroSection({ heroImages }: { heroImages?: string[] }) {
   const t = useTranslations('hero')
-  const images = (heroImages && heroImages.length > 0) ? heroImages : BEACH_IMAGES
+  const images = (heroImages && heroImages.length > 0) ? heroImages : FALLBACK_IMAGES
   const [current, setCurrent] = useState(0)
   const [animKey, setAnimKey] = useState(0)
 
