@@ -28,6 +28,15 @@ body {
   animation: kenburns 9s ease-out forwards;
 }
 
+/* ── Island card Ken Burns (different direction) ────────────── */
+@keyframes island-kenburns {
+  0%   { transform: scale(1.05) translate(1%, 0);  }
+  100% { transform: scale(1.15) translate(-1%, -1%); }
+}
+.island-kenburns {
+  animation: island-kenburns 7s ease-out forwards;
+}
+
 /* ── Hero text fade-in-up ────────────────────────────────────── */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(18px); }
