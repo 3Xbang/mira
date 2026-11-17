@@ -125,9 +125,9 @@ export default function HeroSection({ heroImages }: { heroImages?: string[] }) {
         </Link>
       </div>
 
-      {/* ── Island photo card (bottom-left) ──────────────────────── */}
+      {/* ── Island photo card — temporarily hidden, re-enable later ── */}
+      {/* 
       <div className="absolute bottom-24 left-6 z-20 hidden md:block hero-fade-in" style={{ animationDelay: '1s' }}>
-        {/* Frame */}
         <div className="relative w-56 h-40 overflow-hidden border border-white/35 shadow-2xl">
           {ISLAND_IMAGES.map((src, i) => (
             <div
@@ -140,37 +140,23 @@ export default function HeroSection({ heroImages }: { heroImages?: string[] }) {
                 key={i === islandCurrent ? islandKey : i}
                 className={i === islandCurrent ? 'island-kenburns absolute inset-0' : 'absolute inset-0'}
               >
-                <Image
-                  src={src}
-                  alt="Koh Samui island"
-                  fill
-                  className="object-cover object-center"
-                  unoptimized
-                />
+                <Image src={src} alt="Koh Samui island" fill className="object-cover object-center" unoptimized />
               </div>
             </div>
           ))}
-          {/* Bottom label */}
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-3 py-2 z-10">
-            <p className="text-white text-[9px] tracking-[0.3em] uppercase font-light">
-              Koh Samui · Thailand
-            </p>
+            <p className="text-white text-[9px] tracking-[0.3em] uppercase font-light">Koh Samui · Thailand</p>
           </div>
         </div>
-        {/* Dot indicators */}
         <div className="flex gap-1.5 mt-2 justify-center">
           {ISLAND_IMAGES.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => { setIslandCurrent(i); setIslandKey(k => k + 1) }}
-              className={`rounded-full transition-all duration-300 ${
-                i === islandCurrent ? 'bg-white w-3 h-1.5' : 'bg-white/40 w-1.5 h-1.5'
-              }`}
-              aria-label={`Island photo ${i + 1}`}
-            />
+            <button key={i} onClick={() => { setIslandCurrent(i); setIslandKey(k => k + 1) }}
+              className={`rounded-full transition-all duration-300 ${i === islandCurrent ? 'bg-white w-3 h-1.5' : 'bg-white/40 w-1.5 h-1.5'}`}
+              aria-label={`Island photo ${i + 1}`} />
           ))}
         </div>
       </div>
+      */}
 
       {/* ── Slide indicators (main) ──────────────────────────────── */}
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-2 z-10">
